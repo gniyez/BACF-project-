@@ -1,0 +1,8 @@
+public class CareerService extends User{
+    private String staffID;
+    private String department;
+    public String getStaffID(){
+         return staffID
+    }
+    public 
+}
