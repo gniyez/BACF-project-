@@ -1,0 +1,30 @@
+public class Student{
+    private String major;
+    private int yearOfStudy;
+    private String studentEmail;
+    private int maxApps = 3;
+
+    public Student(String major, int yearOfStudy, String studentEmail){
+        this.major = major;
+        this.yearOfStudy = yearOfStudy;
+        this.studentEmail = studentEmail;
+    }
+
+    public String getMajor(){
+        return major;
+    }
+
+    public void setMajor(String major){
+        this.major = major;
+    }
+
+    public int getYearOfStudy(){
+        return yearOfStudy;
+    }
+
+    public void setYearOfStudy(int yearOfStudy){
+        this.yearOfStudy = yearOfStudy;
+    }
+
+    public void displayRole(){}
+}
