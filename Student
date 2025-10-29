@@ -1,13 +1,14 @@
-public class Student{
+public class Student extends User{
     private String major;
     private int yearOfStudy;
-    private String studentEmail;
+    private String studentID;
     private int maxApps = 3;
 
-    public Student(String major, int yearOfStudy, String studentEmail){
+    public Student(String userID, String name, String password, String major, int yearOfStudy, String studentID){
+        super(userID, name, password);
         this.major = major;
         this.yearOfStudy = yearOfStudy;
-        this.studentEmail = studentEmail;
+        this.studentID = studentID;
     }
 
     public String getMajor(){
