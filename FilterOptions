@@ -1,0 +1,3 @@
+public interface FilterOptions{
+    void filter(String criteria)
+}
