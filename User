@@ -1,7 +1,7 @@
-public class abstract User{
+public abstract class User{
     private String userID;
     private String name;
-    private String password='password';
+    private String password= "password";
     public String getUserID(){
         return userID;
     }
@@ -21,5 +21,5 @@ public class abstract User{
     public void setPassword(String password) {
         this.password = password;
     }
-    public abstract displayRole();
+    public abstract void displayRole();
 }
