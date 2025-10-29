@@ -1,3 +1,4 @@
 public interface FilterOptions{
-    void filter(String criteria)
+    List<Internship> filter(String criteria, String value);
 }
+
