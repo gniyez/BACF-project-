@@ -23,6 +23,7 @@ classDiagram
         FILLED
     }
 
+
     %% ========== USER HIERARCHY ==========
     class User {
         <<abstract>>
@@ -30,6 +31,7 @@ classDiagram
         -name : String
         -password : String
         -email : String
+        -filterSettings : FilterSettings
         +User(String, String, String, String)
         +login(String, String) boolean
         +changePassword(String) void
@@ -38,6 +40,10 @@ classDiagram
         +getName() String
         +getEmail() String
         +setPassword(String) void
+        +getFilterSettings() FilterSettings
+        +setFilterSettings(FilterSettings) void
+        +saveFilterSettings() void
+        +loadFilterSettings() void
     }
 
     class Student {
@@ -53,6 +59,7 @@ classDiagram
         +displayDashboard() void
         +getYearOfStudy() int
         +getMajor() String
+        +viewInternshipsWithFilters() void
     }
 
     class CompanyRepresentative {
@@ -72,6 +79,7 @@ classDiagram
         +setApproved(boolean) void
         +getInternships() List~Internship~
         +addInternship(Internship) void
+        +viewApplicationsWithFilters() void
     }
 
     class CareerCenterStaff {
@@ -81,6 +89,7 @@ classDiagram
         +displayDashboard() void
         +getStaffDepartment() String
         +getRole() String
+        +generateFilteredReports(FilterSettings) void
     }
 
     %% ========== INTERFACE ==========
@@ -91,6 +100,10 @@ classDiagram
         +displayDashboard() void
         +showMessage(String) void
         +showError(String) void
+        +applyFilters() void
+        +clearFilters() void
+        +saveFilterState() void
+        +loadFilterState() void
     }
 
     class StudentUI {
@@ -98,6 +111,7 @@ classDiagram
         -scanner : Scanner
         -internshipController : InternshipController
         -applicationController : ApplicationController
+        -currentFilters : FilterSettings
         +StudentUI(Student, InternshipController, ApplicationController)
         +viewAvailableInternships() void
         +applyForInternship() void
@@ -105,6 +119,11 @@ classDiagram
         +acceptInternshipPlacement() void
         +requestWithdrawal() void
         +changePassword() void
+        +applyFilters() void
+        +clearFilters() void
+        +showFilterMenu() void
+        +saveFilterState() void
+        +loadFilterState() void
     }
 
     class CompanyRepresentativeUI {
@@ -113,6 +132,7 @@ classDiagram
         -internshipController : InternshipController
         -applicationController : ApplicationController
         -userController : UserController
+        -currentFilters : FilterSettings
         +CompanyRepresentativeUI(CompanyRepresentative, InternshipController, ApplicationController, UserController)
         +createInternshipOpportunity() void
         +viewMyInternships() void
@@ -121,6 +141,11 @@ classDiagram
         +toggleInternshipVisibility() void
         +changePassword() void
         +showPendingApprovalMessage() void
+        +applyFilters() void
+        +clearFilters() void
+        +showFilterMenu() void
+        +saveFilterState() void
+        +loadFilterState() void
     }
 
     class CareerCenterStaffUI {
@@ -129,12 +154,18 @@ classDiagram
         -userController : UserController
         -internshipController : InternshipController
         -applicationController : ApplicationController
+        -currentFilters : FilterSettings
         +CareerCenterStaffUI(CareerCenterStaff, UserController, InternshipController, ApplicationController)
         +approveCompanyRepresentatives() void
         +approveInternshipOpportunities() void
         +processWithdrawalRequests() void
         +generateReports() void
         +changePassword() void
+        +applyFilters() void
+        +clearFilters() void
+        +showFilterMenu() void
+        +saveFilterState() void
+        +loadFilterState() void
     }
 
     %% ========== ENTITY CLASSES ==========
@@ -162,6 +193,9 @@ classDiagram
         +setSlots(int) void
         +getLevel() InternshipLevel
         +getStatus() InternshipStatus
+        +getCompanyName() String
+        +getPreferredMajor() String
+        +getClosingDate() LocalDate
     }
 
     class Application {
@@ -201,6 +235,8 @@ classDiagram
         +InternshipController()
         +createInternship(CompanyRepresentative, Internship) boolean
         +getEligibleInternshipsForStudent(Student) List~Internship~
+        +getFilteredInternships(FilterSettings) List~Internship~
+        +getInternshipsByFilters(FilterSettings, List~Internship~) List~Internship~
         +approveInternship(String, CareerCenterStaff) boolean
         +getInternshipById(String) Internship
         +getInternshipsByCompany(String) List~Internship~
@@ -218,6 +254,7 @@ classDiagram
         +acceptInternshipPlacement(Student, Application) void
         +getApplicationsForInternship(String) List~Application~
         +getApplicationsByStudent(String) List~Application~
+        +getFilteredApplications(FilterSettings, List~Application~) List~Application~
     }
 
     class CSVDataLoader {
@@ -242,6 +279,35 @@ classDiagram
         -registerCompanyRepresentative() void
         -initializeUserInterface() void
     }
+
+    %% ========== FILTER CLASSES ==========
+    class FilterSettings {
+        -statusFilter : InternshipStatus
+        -levelFilter : InternshipLevel
+        -majorFilter : String
+        -companyFilter : String
+        -closingDateFilter : LocalDate
+        -sortBy : String
+        -sortOrder : String
+        +FilterSettings()
+        +applyFilters(List~Internship~) List~Internship~
+        +clearFilters() void
+        +getStatusFilter() InternshipStatus
+        +setStatusFilter(InternshipStatus) void
+        +getLevelFilter() InternshipLevel
+        +setLevelFilter(InternshipLevel) void
+        +getMajorFilter() String
+        +setMajorFilter(String) void
+        +getCompanyFilter() String
+        +setCompanyFilter(String) void
+        +getClosingDateFilter() LocalDate
+        +setClosingDateFilter(LocalDate) void
+        +getSortBy() String
+        +setSortBy(String) void
+        +getSortOrder() String
+        +setSortOrder(String) void
+    }
+    
 
     %% ========== RELATIONSHIPS ==========
     User <|-- Student
@@ -285,9 +351,23 @@ classDiagram
     InternshipManagementSystem --> User
     InternshipManagementSystem --> UserInterface
 
+    %% ========== FILTER RELATIONSHIPS ==========
+    User *-- FilterSettings
+    StudentUI *-- FilterSettings
+    CompanyRepresentativeUI *-- FilterSettings
+    CareerCenterStaffUI *-- FilterSettings
+
+    InternshipController ..> FilterSettings
+    ApplicationController ..> FilterSettings
+    Student ..> FilterSettings
+    CompanyRepresentative ..> FilterSettings
+    CareerCenterStaff ..> FilterSettings
+
     %% ========== ENUM USAGE ==========
     Internship --> InternshipLevel
     Internship --> InternshipStatus
     Application --> ApplicationStatus
     Student ..> InternshipLevel
+    FilterSettings --> InternshipLevel
+    FilterSettings --> InternshipStatus
 ```
