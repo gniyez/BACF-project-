@@ -4,7 +4,6 @@ public class Company extends User{
     private String position;
     private boolean approved;
 
-<<<<<<< HEAD
     public Company(String userID, String name, String password, String companyID, String department, String position) {
         super(userID, name, password);
         this.companyID = companyID;
@@ -26,30 +25,17 @@ public class Company extends User{
     }
     public String getPosition(){
         return position;
+    }
+    public void setPosition(String position){
+        this.position = position;
+    }
+    public boolean isApproved(){
+        return approved;
+    }
+    public void setApproved(boolean approved){
+        this.approved = approved;
+    }
+    public void displayRole(){
+        System.out.println("I am a company representative");
     }
 }
-=======
-    public Company(String userID, String name, String password, String companyID, String department, String position) {
-        super(userID, name, password);
-        this.companyID = companyID;
-        this.department = department;
-        this.position = position;
-        this.approved = false;
-    }
-    public String getCompanyID(){
-        return companyID;
-    }
-    public void setCompanyID(String companyID){
-        this.companyID = companyID;
-    }
-    public String getDepartment(){
-        return department;
-    }
-    public void setDepartment(String department){
-        this.department = department;
-    }
-    public String getPosition(){
-        return position;
-    }
-
->>>>>>> 5c53cf9eab991a5481ff625c0c1de81ba10993da
