@@ -1,15 +1,15 @@
-public class Company extends User{
+public class CompanyRepresentative extends User{
     private String companyID;
     private String department;
     private String position;
-    private boolean approved;
+    private String status = "PENDING";
 
-    public Company(String userID, String name, String password, String companyID, String department, String position) {
+    public CompanyRepresentive(String userID, String name, String password, String companyID, String department, String position) {
         super(userID, name, password);
         this.companyID = companyID;
         this.department = department;
         this.position = position;
-        this.approved = false;
+        this.status = "PENDING";
     }
     public String getCompanyID(){
         return companyID;
@@ -29,11 +29,17 @@ public class Company extends User{
     public void setPosition(String position){
         this.position = position;
     }
-    public boolean isApproved(){
-        return approved;
+    public String getStatus(){
+        return status;
     }
-    public void setApproved(boolean approved){
-        this.approved = approved;
+    public void setStatus(String status){
+        this.status = status;
+    }
+    public boolean isApproved(){
+        return status.equals("APPROVED");
+    }
+    public void setApproved(){
+        this.status = "APPROVED";
     }
     public void displayRole(){
         System.out.println("I am a company representative");
