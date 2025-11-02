@@ -295,8 +295,8 @@ classDiagram
     User <|-- CareerStaff
 
     %% Model Associations
-    Student "1" -- "*" Application : submits
-    CompanyRep "1" -- "*" Internship : creates
+    Student "1" -- "0..3" Application : submits
+    CompanyRep "1" -- "0..5" Internship : creates
     Internship "1" -- "*" Application : receives
 
     %% Interface Implementations
