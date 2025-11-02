@@ -6,11 +6,7 @@ classDiagram
         +loadStudents(filename: String) List~Student~
         +loadCompanyReps(filename: String) List~CompanyRep~
         +loadStaff(filename: String) List~CareerStaff~
-        +loadInternships(filename: String) List~Internship~
-        +loadApplications(filename: String) List~Application~
         +saveUsers(users: List~User~, filename: String) boolean
-        +saveInternships(internships: List~Internship~, filename: String) boolean
-        +saveApplications(applications: List~Application~, filename: String) boolean
     }
 
     class User {
@@ -332,8 +328,6 @@ classDiagram
     CSVLoader ..> Student : creates
     CSVLoader ..> CompanyRep : creates
     CSVLoader ..> CareerStaff : creates
-    CSVLoader ..> Internship : creates
-    CSVLoader ..> Application : creates
 
     %% Enum Usage
     Internship --> InternshipLevel
