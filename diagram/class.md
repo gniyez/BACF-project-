@@ -208,7 +208,6 @@ classDiagram
         +getPendingCompanyReps() List~CompanyRep~
         +processWithdrawal(applicationId: String, approve: boolean) boolean
         +generateReport(filters: Map~String, Object~) String
-        +getSystemStatistics() Map~String, Object~
     }
 
     %% ========== UI CLASSES ==========
