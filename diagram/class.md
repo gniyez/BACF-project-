@@ -1,135 +1,33 @@
 ```mermaid
 classDiagram
-    %% ========== CORE SYSTEM ==========
-    class InternshipManagementSystem {
-        -instance: InternshipManagementSystem
-        -userController: UserController
-        -internshipController: InternshipController
-        -applicationController: ApplicationController
-        -csvLoader: CSVLoader
-        -currentUser: User
-        -currentUI: UserInterface
-        +getInstance() InternshipManagementSystem
-        +start() void
-        +loadInitialData() void
-        +switchToUserUI(User) void
-    }
 
-    %% ========== DATA LAYER ==========
     class CSVLoader {
         -DEFAULT_PASSWORD: String = "password"
-        +loadStudents(String) List~Student~
-        +loadCompanyReps(String) List~CompanyRep~
-        +loadStaff(String) List~CareerStaff~
-        +loadInternships(String) List~Internship~
-        +loadApplications(String) List~Application~
+        +loadStudents(filename: String) List~Student~
+        +loadCompanyReps(filename: String) List~CompanyRep~
+        +loadStaff(filename: String) List~CareerStaff~
+        +loadInternships(filename: String) List~Internship~
+        +loadApplications(filename: String) List~Application~
+        +saveUsers(users: List~User~, filename: String) boolean
+        +saveInternships(internships: List~Internship~, filename: String) boolean
+        +saveApplications(applications: List~Application~, filename: String) boolean
     }
 
-    %% ========== UI LAYER (ISP) ==========
-    class UserInterface {
-        <<interface>>
-        +showMenu() void
-        +handleInput() void
-        +displayMessage(String) void
-        +showFilterOptions() void
-    }
-
-    class StudentUI {
-        -studentController: StudentController
-        +showMenu() void
-        +viewInternships() void
-        +applyForInternship() void
-        +viewApplications() void
-    }
-
-    class CompanyUI {
-        -companyController: CompanyController
-        +showMenu() void
-        +createInternship() void
-        +viewApplications() void
-    }
-
-    class CareerStaffUI {
-        -staffController: StaffController
-        +showMenu() void
-        +approveCompanyReps() void
-        +approveInternships() void
-        +processWithdrawals() void
-        +generateReports() void
-    }
-
-    %% ========== CONTROLLER LAYER (SRP) ==========
-    class UserController {
-        -users: Map~String, User~
-        +login(String, String) User
-        +changePassword(String, String) boolean
-        +getPendingCompanyReps() List~CompanyRep~
-        +approveCompanyRep(String) boolean
-    }
-
-    class InternshipController {
-        -internships: Map~String, Internship~
-        +getFilteredInternships(User) List~Internship~
-        +createInternship(Internship) boolean
-        +approveInternship(String) boolean
-        +toggleVisibility(String, boolean) boolean
-        +getPendingInternships() List~Internship~
-    }
-
-    class ApplicationController {
-        -applications: Map~String, Application~
-        +submitApplication(Student, String) boolean
-        +getApplicationsByStudent(String) List~Application~
-        +updateApplicationStatus(String, ApplicationStatus) boolean
-        +acceptPlacement(String, String) boolean
-        +getWithdrawalRequests() List~Application~
-    }
-
-    class StudentController {
-        -student: Student
-        -internshipCtrl: InternshipController
-        -applicationCtrl: ApplicationController
-        +getEligibleInternships() List~Internship~
-        +applyForInternship(String) boolean
-        +acceptInternship(String) boolean
-        +saveFilterPreferences(Map~String,Object~) void
-    }
-
-    class CompanyController {
-        -companyRep: CompanyRep
-        -internshipCtrl: InternshipController
-        -applicationCtrl: ApplicationController
-        +createInternship(Map~String,Object~) boolean
-        +getMyInternships() List~Internship~
-        +reviewApplication(String, boolean) boolean
-        +saveFilterPreferences(Map~String,Object~) void
-    }
-
-    class StaffController {
-        -staff: CareerStaff
-        -userCtrl: UserController
-        -internshipCtrl: InternshipController
-        -applicationCtrl: ApplicationController
-        +approveCompanyRep(String) boolean
-        +approveInternship(String) boolean
-        +processWithdrawal(String, boolean) boolean
-        +generateReport() String
-        +saveFilterPreferences(Map~String,Object~) void
-    }
-
-    %% ========== MODEL LAYER (LSP) ==========
     class User {
         <<abstract>>
         -userId: String
         -name: String
         -password: String
         -email: String
-        -filterSettings: Map~String, Object~
-        +User(String, String, String, String)
-        +authenticate(String) boolean
-        +changePassword(String) void
-        +saveFilterSettings(Map~String,Object~) void
-        +getFilterSettings() Map~String,Object~
+        +getUserID() String
+        +setUserID(userId: String) void
+        +getName() String
+        +setName(name: String) void
+        +getPassword() String
+        +setPassword(password: String) void
+        +getEmail() String
+        +setEmail(email: String) void
+        +displayRole() String
     }
 
     class Student {
@@ -137,8 +35,21 @@ classDiagram
         -yearOfStudy: int
         -appliedInternshipIds: List~String~
         -acceptedInternshipId: String
-        +canApplyForLevel(InternshipLevel) boolean
+        -maxApplications: int = 3
+        +getMajor() String
+        +setMajor(major: String) void
+        +getYearOfStudy() int
+        +setYearOfStudy(year: int) void
+        +getAppliedInternshipIds() List~String~
+        +getAcceptedInternshipId() String
+        +setAcceptedInternshipId(internshipId: String) void
+        +canApplyForLevel(level: InternshipLevel) boolean
         +hasReachedApplicationLimit() boolean
+        +addApplication(internshipId: String) boolean
+        +removeApplication(internshipId: String) boolean
+        +acceptPlacement(internshipId: String) boolean
+        +hasAcceptedPlacement() boolean
+        +displayRole() String
     }
 
     class CompanyRep {
@@ -147,27 +58,73 @@ classDiagram
         -position: String
         -status: AccountStatus
         -createdInternshipIds: List~String~
+        -maxInternships: int = 5
+        +getCompanyName() String
+        +setCompanyName(companyName: String) void
+        +getDepartment() String
+        +setDepartment(department: String) void
+        +getPosition() String
+        +setPosition(position: String) void
+        +getStatus() AccountStatus
+        +setStatus(status: AccountStatus) void
+        +getCreatedInternshipIds() List~String~
         +canCreateMoreInternships() boolean
+        +addInternship(internshipId: String) boolean
+        +isApproved() boolean
+        +displayRole() String
     }
 
     class CareerStaff {
         -department: String
+        +getDepartment() String
+        +setDepartment(department: String) void
+        +displayRole() String
     }
 
     class Internship {
         -internshipId: String
         -title: String
+        -description: String
         -level: InternshipLevel
         -preferredMajor: String
-        -openingDate: Date
-        -closingDate: Date
+        -openDate: Date
+        -closeDate: Date
         -status: InternshipStatus
-        -companyId: String
-        -slotsAvailable: int
+        -companyName: String
+        -companyRepId: String
+        -totalSlots: int
+        -filledSlots: int
         -isVisible: boolean
+        +getInternshipId() String
+        +setInternshipId(id: String) void
+        +getTitle() String
+        +setTitle(title: String) void
+        +getDescription() String
+        +setDescription(description: String) void
+        +getLevel() InternshipLevel
+        +setLevel(level: InternshipLevel) void
+        +getPreferredMajor() String
+        +setPreferredMajor(major: String) void
+        +getOpenDate() Date
+        +setOpenDate(date: Date) void
+        +getCloseDate() Date
+        +setCloseDate(date: Date) void
+        +getStatus() InternshipStatus
+        +setStatus(status: InternshipStatus) void
+        +getCompanyName() String
+        +setCompanyName(companyName: String) void
+        +getCompanyRepId() String
+        +setCompanyRepId(repId: String) void
+        +getTotalSlots() int
+        +setTotalSlots(slots: int) void
+        +getFilledSlots() int
+        +setFilledSlots(slots: int) void
+        +getIsVisible() boolean
+        +setIsVisible(visible: boolean) void
         +isOpenForApplication() boolean
         +hasAvailableSlots() boolean
-        +isEligibleForStudent(Student) boolean
+        +isEligibleForStudent(student: Student) boolean
+        +incrementFilledSlots() boolean
     }
 
     class Application {
@@ -176,7 +133,133 @@ classDiagram
         -internshipId: String
         -status: ApplicationStatus
         -withdrawalRequested: boolean
+        -applicationDate: Date
+        +getApplicationId() String
+        +setApplicationId(id: String) void
+        +getStudentId() String
+        +setStudentId(studentId: String) void
+        +getInternshipId() String
+        +setInternshipId(internshipId: String) void
+        +getStatus() ApplicationStatus
+        +setStatus(status: ApplicationStatus) void
+        +getWithdrawalRequested() boolean
+        +setWithdrawalRequested(requested: boolean) void
+        +getApplicationDate() Date
+        +setApplicationDate(date: Date) void
         +isPending() boolean
+        +requestWithdrawal() void
+    }
+
+    %% ========== INTERFACES ==========
+    class Authenticatable {
+        <<interface>>
+        +login(userId: String, password: String) boolean
+        +logout() void
+        +changePassword(userId: String, oldPassword: String, newPassword: String) boolean
+    }
+
+    class Filterable {
+        <<interface>>
+        +filterInternships(criteria: Map~String, Object~) List~Internship~
+        +saveFilterPreferences(preferences: Map~String, Object~) void
+    }
+
+    %% ========== CONTROLLERS ==========
+    class AuthController {
+        -users: Map~String, User~
+        +login(userId: String, password: String) boolean
+        +logout() void
+        +changePassword(userId: String, oldPassword: String, newPassword: String) boolean
+        +validateUser(userId: String) boolean
+        +getCurrentUser() User
+    }
+
+    class InternshipController {
+        -internships: Map~String, Internship~
+        +getAllInternships() List~Internship~
+        +getInternshipById(internshipId: String) Internship
+        +filterInternships(criteria: Map~String, Object~) List~Internship~
+        +saveFilterPreferences(preferences: Map~String, Object~) void
+        +createInternship(internship: Internship) boolean
+        +approveInternship(internshipId: String) boolean
+        +rejectInternship(internshipId: String) boolean
+        +toggleVisibility(internshipId: String, visible: boolean) boolean
+        +getInternshipsByCompany(companyRepId: String) List~Internship~
+        +getEligibleInternshipsForStudent(student: Student) List~Internship~
+        +getPendingInternships() List~Internship~
+    }
+
+    class ApplicationController {
+        -applications: Map~String, Application~
+        -studentApplications: Map~String, List~String~~
+        -internshipApplications: Map~String, List~String~~
+        +applyForInternship(studentId: String, internshipId: String) boolean
+        +withdrawApplication(studentId: String, internshipId: String) boolean
+        +approveApplication(applicationId: String) boolean
+        +rejectApplication(applicationId: String) boolean
+        +acceptPlacement(studentId: String, applicationId: String) boolean
+        +getApplicationsByStudent(studentId: String) List~Application~
+        +getApplicationsByInternship(internshipId: String) List~Application~
+        +checkEligibility(student: Student, internship: Internship) boolean
+        +hasStudentApplied(studentId: String, internshipId: String) boolean
+        +getPendingWithdrawals() List~Application~
+    }
+
+    class StaffController {
+        -pendingCompanyReps: Map~String, CompanyRep~
+        +approveCompanyRep(repId: String) boolean
+        +rejectCompanyRep(repId: String) boolean
+        +getPendingCompanyReps() List~CompanyRep~
+        +processWithdrawal(applicationId: String, approve: boolean) boolean
+        +generateReport(filters: Map~String, Object~) String
+        +getSystemStatistics() Map~String, Object~
+    }
+
+    %% ========== UI CLASSES ==========
+    class StudentUI {
+        -currentStudent: Student
+        -authController: AuthController
+        -internshipController: InternshipController
+        -applicationController: ApplicationController
+        +showMenu() void
+        +handleInput() void
+        +viewInternshipList() void
+        +applyForInternship() void
+        +viewApplicationStatus() void
+        +withdrawApplication() void
+        +acceptPlacement() void
+        +filterInternships() void
+    }
+
+    class CompanyUI {
+        -currentCompanyRep: CompanyRep
+        -authController: AuthController
+        -internshipController: InternshipController
+        -applicationController: ApplicationController
+        +showMenu() void
+        +handleInput() void
+        +createInternship() void
+        +viewApplications() void
+        +approveApplication() void
+        +rejectApplication() void
+        +toggleVisibility() void
+        +filterInternships() void
+    }
+
+    class CareerStaffUI {
+        -currentStaff: CareerStaff
+        -authController: AuthController
+        -internshipController: InternshipController
+        -applicationController: ApplicationController
+        -staffController: StaffController
+        +showMenu() void
+        +handleInput() void
+        +approveCompanyRep() void
+        +approveInternship() void
+        +rejectInternship() void
+        +processWithdrawal() void
+        +generateReport() void
+        +filterInternships() void
     }
 
     %% ========== ENUMS ==========
@@ -211,46 +294,46 @@ classDiagram
     }
 
     %% ========== RELATIONSHIPS ==========
-    %% Core System
-    InternshipManagementSystem --> UserController
-    InternshipManagementSystem --> StudentController
-    InternshipManagementSystem --> CompanyController
-    InternshipManagementSystem --> StaffController
-    InternshipManagementSystem --> InternshipController
-    InternshipManagementSystem --> ApplicationController
-    InternshipManagementSystem --> CSVLoader
-    InternshipManagementSystem --> UserInterface
-
-    %% UI Layer (ISP)
-    UserInterface <|.. StudentUI
-    UserInterface <|.. CompanyUI
-    UserInterface <|.. CareerStaffUI
-
-    %% Inheritance (LSP)
+    %% Inheritance
     User <|-- Student
     User <|-- CompanyRep
     User <|-- CareerStaff
 
-    %% UI-Controller (DIP)
-    StudentUI --> StudentController
-    CompanyUI --> CompanyController
+    %% Model Associations
+    Student "1" -- "*" Application : submits
+    CompanyRep "1" -- "*" Internship : creates
+    Internship "1" -- "*" Application : receives
+
+    %% Interface Implementations
+    Authenticatable <|.. AuthController
+    Filterable <|.. InternshipController
+
+    %% UI Dependencies (Dependency Inversion)
+    StudentUI --> Authenticatable
+    StudentUI --> Filterable
+    StudentUI --> ApplicationController
+    
+    CompanyUI --> Authenticatable
+    CompanyUI --> Filterable
+    CompanyUI --> ApplicationController
+    
+    CareerStaffUI --> Authenticatable
+    CareerStaffUI --> Filterable
+    CareerStaffUI --> ApplicationController
     CareerStaffUI --> StaffController
 
-    %% Controller Coordination (SRP)
-    StudentController --> UserController
-    StudentController --> InternshipController
-    StudentController --> ApplicationController
-    CompanyController --> UserController
-    CompanyController --> InternshipController
-    CompanyController --> ApplicationController
-    StaffController --> UserController
-    StaffController --> InternshipController
-    StaffController --> ApplicationController
+    %% Controller Dependencies
+    AuthController --> User
+    InternshipController --> Internship
+    ApplicationController --> Application
+    StaffController --> CompanyRep
 
-    %% Data Creation
+    %% Data Management
     CSVLoader ..> Student : creates
     CSVLoader ..> CompanyRep : creates
     CSVLoader ..> CareerStaff : creates
+    CSVLoader ..> Internship : creates
+    CSVLoader ..> Application : creates
 
     %% Enum Usage
     Internship --> InternshipLevel
@@ -258,9 +341,7 @@ classDiagram
     Application --> ApplicationStatus
     CompanyRep --> AccountStatus
 
-    %% Model Associations
-    Student "1" -- "3" Application : submits
-    CompanyRep "1" -- "10" Internship : creates
-    Internship "1" -- "*" Application : receives
-
+    %% Internal Controller Coordination
+    InternshipController --> ApplicationController
+    StaffController --> ApplicationController
 ```
