@@ -81,6 +81,14 @@ public boolean rejectInternship(String staffID, Internship internship) {
     System.out.println("Internship rejected: " + internship.getInternshipTitle());
     return true;
 }
+public Internship findInternshipByTitle(String title) {
+    for (Internship internship : internships) {
+        if (internship.getInternshipTitle().equalsIgnoreCase(title)) {
+            return internship;
+        }
+    }
+    return null;
+}
 
 public void generateReport(String statusFilter, String majorFilter, String levelFilter) {
     System.out.println("=== Internship Opportunities Report ===");

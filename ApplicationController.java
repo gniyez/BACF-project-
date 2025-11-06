@@ -2,8 +2,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ApplicationController implements StudentApplications, CompanyApplications{
+public class ApplicationController{
     private List<Application> applications=new ArrayList<>();
+
     public void applyInternship(Student student,Internship internship){
         long count=applications.stream()
                    .filter(a->a.getStudent().equals(student))
@@ -17,7 +18,7 @@ public class ApplicationController implements StudentApplications, CompanyApplic
         if (checkEligibility(student,internship)){
             Application app=new Application(student,internship);
             applications.add(app);
-            System.out.println("Applciation submitted.Status="+app.getStatus());
+            System.out.println("Application submitted.Status="+app.getStatus());
         }else{
             System.out.println("Not eligible for this internship");
         }
@@ -33,14 +34,14 @@ public class ApplicationController implements StudentApplications, CompanyApplic
             return internship.setLevel("Basic")||
                    internship.setLevel("Intermediate")||
                    internship.setLevel("Advanced");
-
         }
         else{
             return false;
         }      
         
     }
-    public void withdrawApplication(Student student,Appplication app){
+    public void withdrawApplication(Student student,Application app){
+        app.setStatus("Withdrawn");
         System.out.println("Application withdraw by "+student.getName());
     }
     public void acceptPlacement(Student student,Application app){
@@ -48,16 +49,16 @@ public class ApplicationController implements StudentApplications, CompanyApplic
         System.out.println("Placement accepted for "+student.getName());
     }
     public void approveApplication(Company rep,Application app){
-        app.setStatus("Approved");
+        app.setStatus("APPROVED");
         System.out.println(rep.getCompanyname()+"approved application"+app.getApplicationID());
     }
     public void rejectApplication(Company rep,Application app){
-        app.setStatus("rejected");
+        app.setStatus("REJECTED");
         System.out.println(rep.getCompanyname()+"rejected application"+app.getApplicationID());
 
     }
     public void updateApplicationStatus(Applciation app,String status){
         app.setStatus(status);
-        System.out.println("Applciation status updated to"+status);
+        System.out.println("Application status updated to"+status);
     }
 }

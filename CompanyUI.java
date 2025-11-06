@@ -1,4 +1,4 @@
-public class CompanyUI implements FilterOptions, LogIn, CompanyApplications{
+public class CompanyUI implements FilterOptions, LogIn{
     private ApplicationController appController;
     private CompanyRepresentative currentUser;
     private Scanner scanner;
@@ -42,7 +42,8 @@ public class CompanyUI implements FilterOptions, LogIn, CompanyApplications{
                 case 5 -> toggleVisibility();
                 case 6 -> filterApplications();
                 case 0 -> {
-                    System.out,prinln("Thank you for using the Company Portal. Goodbye!");
+                    logout();
+                    System.out,prinln("Goodbye!");
                     return;
                 deafult -> System.out.println("Invalid choice. Please try again.");
             }
@@ -137,57 +138,29 @@ public class CompanyUI implements FilterOptions, LogIn, CompanyApplications{
             return;
         }
 
-        System.out.println("Application Details:");
-        System.out.println("ID: " + selectedApp.getApplicationID());
-        System.out.println("Student: " + selectedApp.student.getName());
-        System.out.println("Year: " + selectedApp.student.getYear());
-        System.out.println("Internship: " + selectedApp.internship.getTitle());
-        System.out.println("Current Status: " + selectedApp.getStatus());
-
-        System.out.println("\nChoose action:");
         System.out.println("1. Approve Application");
         System.out.println("2. Reject Application");
-        System.out.println("3. Go Back");
-        System.out.print("Select (1-3): ");
-
+        System.out.print("Choose (1-2): ");
         int choice = scanner.nextInt();
-        switch (choice) {
-            case 1 -> {
-                appController.approveApplication(currentUser, selectedApp);
-                System.out.println("Application approved.");}
-            case 2 -> {
-                appController.rejectApplication(currentUser, selectedApp);
-                System.out.println("Application rejected.");}
-            case 3 -> return;
-            default -> System.out.println("Invalid choice.");
-        }
+
+        if (choice == 1) approveApplication(currentUser, selectedApp);
+        else if (choice == 2) rejectApplication(currentUser, selectedApp);
+        else System.out.println("Cancelled.");
     }
 
-    private void viewMyInternships(){
-        System.out.println("═".repeat(70));
-        System.out.println("MY INTERNSHIPS");
-        System.out.println("═".repeat(70));
-        
+    private void viewMyInternships(){ 
         if (internships.isEmpty()) {
             System.out.println("No internships created yet.");
             return;
         }
 
-        for (int i = 0; i < internships.size(); i++) {
-            Internship internship = internships.get(i);
-            System.out.println((i + 1) + ". " + internship.getTitle());
-            System.out.println("Description: " internship.getDescription());
-            System.out.println("Level: "internship.getLevel());
-            System.out.println("Preferred Major: " + internship.getPreferredMajor());
-            System.out.println("Slots: " + internship.getSlots());
-            System.out.println("Visible: " + internship.isVisible() ? "Yes" : "No"));
-            System.out.println("Close Date: " + internship.getCloseDate());
-            System.out.println();
+        for (Internship i : internships) {
+            System.out.println("- " + i.getInternshipTitle() + " (" + i.getLevel() + ")");
             }
     }
 
 
-    private void toggleVisibility(String title, boolean visible){
+    private void toggleVisibility(){
         viewMyInternships();
 
         if (internships.isEmpty()) {
