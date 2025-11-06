@@ -11,7 +11,7 @@ public class student UI{
     public void viewApplication status(){
         System.out.println("Displaying Application status")
     }
-    public acceptPlacement(Student student,Application app){
+    public void acceptPlacement(Student student,Application app){
           controller.withdrawApplication(student,internship)
     }
     public void withdrawInternship(Student student,Internship internship){

@@ -1,24 +1,47 @@
+import java.util.ArrayList;
+import java.util.List;
+
+
 public class ApplicationController implements StudentApplications, CompanyApplications{
+    private List<Application> applications=new ArrayList<>();
     public void applyInternship(Student student,Internship internship){
+        long count=applications.stream()
+                   .filter(a->a.getStudent().equals(student))
+                   .count();
+        if (count>=3){
+            System.out.println("You have reached the maximum number of application")
+            return;
+        }
+
+
         if (checkEligibility(student,internship)){
             Application app=new Application(student,internship);
+            applications.add(app);
             System.out.println("Applciation submitted.Status="+app.getStatus());
         }else{
             System.out.println("Not eligible for this internship");
         }
     }
-    // need to modify 
-    private boolean checkEligibility(Student student ,Internship internship){
-        String level=internship.getLevel();
-        int year=stduent.getYear();
-        if (level.equals("Basic")){
-            return student.getYear()<=2;
-        }else if (level.equals("Advanced")){
-            return >=3;
+
+    public boolean checkEligibility(Student student ,Internship internship){
+        int year=student.getYear();
+        String level=internship.setLevel();
+        if (year<=2){
+            internship.setLevel("Basic");
         }
+        else if (year>=3){
+            return internship.setLevel("Basic")||
+                   internship.setLevel("Intermediate")||
+                   internship.setLevel("Advanced");
+
+        }
+        else{
+            return false;
+        }      
+        
     }
-    public void withdrawApplication(Student student,Internship internship){
-        System .out.println("Application withdraw by "+student.getName());
+    public void withdrawApplication(Student student,Appplication app){
+        System.out.println("Application withdraw by "+student.getName());
     }
     public void acceptPlacement(Student student,Application app){
         app.setStatus("Accepted");

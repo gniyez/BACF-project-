@@ -1,6 +1,6 @@
 public class CompanyRepresentative extends User{
     private String companyID;
-    private String companyName
+    private String companyName;
     private String department;
     private String position;
     private String status = "PENDING";
