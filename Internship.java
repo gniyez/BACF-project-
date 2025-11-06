@@ -9,6 +9,7 @@ public class Internship{
     private String companyName;
     private boolean isVisible;
     private int slots = 10;
+   
 
     public Internship(String title, String description, String level, String preferredMajor, String status,
         Date openDate, Date closeDate, String companyName, int slots){
@@ -65,10 +66,11 @@ public class Internship{
         }
     }
     public void setStatus(String status){
-           this.status=status;
+        this.status=status;
     }
     public String getStatus(){
          return status;
     }
-    
+
 }
+
