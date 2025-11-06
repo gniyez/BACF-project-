@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util
+import java.util.stream;
+import.java.sql.Date;
 
 public class ApplicationController{
     //create an application list so that can filter later 
@@ -9,6 +10,7 @@ public class ApplicationController{
     public void applyInternship(Student student,Internship internship){
         long count=applications.stream()
                    .filter(a->a.getStudent().equals(student))
+                   .filter(a -> "PENDING".equals(a.getStatus()))
                    .count();
         if (count>=3){
             System.out.println("You have reached the maximum number of application");
@@ -54,21 +56,28 @@ public class ApplicationController{
     }
 
     public void withdrawApplication(Student student,Application app,Internship internship){
-        updateApplicationStatus(app,"Withdrawn");
+        updateApplicationStatus(app,"WITHDRAWN");
         internship.setSlots(internship.getSlot()+1);
         System.out.println("Application withdrawn by "+student.getName());
         System.out.println("Slots restored .Avaliable slots :"+internship.getSlots());
     }
     public void acceptPlacement(Student student,Application app){
-        updateApplicationStatus(app,"Accepted");
-        System.out.println("Placement accepted for "+student.getName());
+        updateApplicationStatus(app,"ACCEPTED");
+        internship.setSlots(internship.getSlot()-1);
+        for (Application otherApp:applications){
+            if (otherApp!= app && otherApp.getStudent()== student){
+                if(!"WITHDRAWN".equals(otherApp.getStatus()) && !"ACCEPTED".equals(otherApp.getStatus())){
+                    updateApplicationStatus(otherApp,"WITHDRAWN");
+            }
+        }
     }
+
     public void approveApplication(CompanyRepresentative rep,Application app){
-        app.setStatus("APPROVED");
+        app.setStatus("SUCCESSFUL");
         System.out.println(rep.getCompanyName()+"approved application"+app.getApplicationID());
     }
     public void rejectApplication(CompanyRepresentative rep,Application app){
-        app.setStatus("REJECTED");
+        app.setStatus("UNSUCCESSFUL");
         System.out.println(rep.getCompanyName()+"rejected application"+app.getApplicationID());
 
     }
@@ -76,4 +85,6 @@ public class ApplicationController{
         app.setStatus(status);
         System.out.println("Application status updated to "+status);
     }
+
+    
 }

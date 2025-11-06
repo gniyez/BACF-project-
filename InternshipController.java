@@ -1,28 +1,24 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.sql.Date;
 
 public class InternshipController implements FilterOptions{
         private List<Internship> internships = new ArrayList<>();
+
         public void createInternship(CompanyRepresentative company_rep,String title, String description, boolean open, boolean close, int slots){
         if (slots>10){
             throw new IllegalArgumentException("Maximum of 10 slots allowed per internship listing");
         }
-        long companyInternshipCount = internships.stream().filter(i -> i.getCompanyRep.equals(CompanyRepresentative)).count();
+        long companyInternshipCount = internships.stream().filter(i -> i.getCompanyName().equalsIgnoreCase(i.getCompanyName())).count();
         if (companyInternshipCount >5){
             throw new IllegalStateException("Each company can create at most 5 internship listings");
         }
-        Internship internship = new Internship(String title, String description, String level, String preferredMajor, String status,
-        Date openDate, Date closeDate, String companyName, int slots);
+        Internship internship = new Internship(String title, String description, String level, String preferredMajor, "PENDING",
+        Date openDate, Date closeDate, i.getCompanyName(), int slots);
         internships.add(internship);
     }
-
-    public void approveInternship(CareerServiceStaff staff, Internship internship){
-        if (internships.contains(internship)){
-            internship.setStatus("Open");
-        } 
-        
-    }
+    
     public void toggleVisibility(Internship internship, boolean visible){
         if (internships.contains(internship)){
             internship.setVisibility(true);

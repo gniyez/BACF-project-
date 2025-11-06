@@ -5,6 +5,10 @@ public abstract class User{
     private FilterOptions savedFilterOptions;
 
     //
+    public User(String userID,String name){
+        this.userID=userID;
+        this.name=name;
+    }
     public FilterOptions getSavedFilterOptions(){
         return savedFilterOptions;
     }

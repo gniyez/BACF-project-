@@ -17,7 +17,7 @@ public class Application{
         return internship;
     }
     public String generateApplicationID(){
-        return "APP-" + student.getStudentID() + "-" + internship.getInternshipID();
+        return "APP-" + java.util.UUID.randomUUID().toString();    
     }
 
     public String getApplicationID(){

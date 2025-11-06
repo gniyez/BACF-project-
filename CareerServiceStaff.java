@@ -1,9 +1,9 @@
 public class CareerServiceStaff extends User{
     private String staffID;
     private String department;
-    public CareerServiceStaff(String userID, String name, String password,
+    public CareerServiceStaff(String userID, String name,
                    String staffID, String department) {
-        super(userID, name, password);
+        super(userID, name);
         this.staffID = staffID;
         this.department = department;
     }

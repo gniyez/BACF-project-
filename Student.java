@@ -2,9 +2,11 @@ public class Student extends User{
     private String major;
     private int yearOfStudy;
     private int maxApps = 3;
+    private studentID
 
-    public Student(String userID, String name, String password, String major, int yearOfStudy){
-        super(userID, name, password);
+    public Student(String userID, String name, String major, int yearOfStudy){
+        super(userID, name);
+        this.studentID=studentID;
         this.major = major;
         this.yearOfStudy = yearOfStudy;
         
@@ -13,8 +15,8 @@ public class Student extends User{
         return studentID;
     }
     public String getStudentID() {
-           return getUserID();
-}
+           return studentID;
+    }
     public String getMajor(){
         return major;
     }
