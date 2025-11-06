@@ -1,4 +1,4 @@
-public class ApplicationController implements studentApplication,companyApplication{
+public class ApplicationController implements StudentApplications, CompanyApplications{
     public void applyInternship(Student student,Internship internship){
         if (checkEligibility(student,internship)){
             Application app=new Application(student,internship);

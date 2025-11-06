@@ -8,7 +8,7 @@ public class CompanyUI implements FilterOptions, LogIn, CompanyApplications{
     }
 
     public void approveApplications(){
-
+        
     }
 
     public void rejectApplications(){
