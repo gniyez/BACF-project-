@@ -1,5 +1,9 @@
+import java.util.ArrayList;
+import java.sql.Date;
+import java.util.List;
+import java.util.Scanner;
+
 public class CompanyUI implements FilterOptions, LogIn{
-    private LogInController logInController;
     private InternshipController internshipController;
     private ApplicationController appController;
     private CompanyRepresentative currentUser;
@@ -87,19 +91,17 @@ public class CompanyUI implements FilterOptions, LogIn{
             System.out.println("Enter preferred major:");
             String preferredMajor = scanner.nextLine();
 
-            Date openDate = new Date();
+            System.out.println("Enter opening date (YYYY-MM-DD):");
+            Date openDate = Date.valueOf(scanner.nextLine());
+
             System.out.println("Enter closing date (YYYY-MM-DD):");
-            String closingDateStr = scanner.nextLine();
-            Date closeDate = Date.valueOf(closingDateStr);
+            Date closeDate = Date.valueOf(scanner.nextLine());
 
             System.out.println("Enter number of slots (max 10):");
             int slots = scanner.nextInt();
             slots = Math.min(slots, 10); //enforce max slots
 
-            Internship internship = new Internship(title, description, level, preferredMajor, "PENDING",openDate, closeDate, currentUser.getCompanyName(), slots);
-
-            internship.setVisible(true);
-            internships.add(internship);
+            internshipController.createInternship(currentUser, title, description, level, preferredMajor, openDate, closeDate, slots);
 
             System.out.println("Internship created successfully!");
            
@@ -110,27 +112,18 @@ public class CompanyUI implements FilterOptions, LogIn{
     }
 
     private void viewApplications(){
-        System.out.println("═".repeat(80));
-        System.out.println("APPLICATIONS RECEIVED");
-        System.out.println("═".repeat(80));
-        
-        if (applications.isEmpty()) {
-            System.out.println(" No applications received yet.");
-            return;
+        List<Application> all = appController.getApplications(); 
+        for (Application app : all) {
+            if (app.getInternship().getCompanyName().equalsIgnoreCase(currentUser.getCompanyName())) {
+                any = true;
+                System.out.println(app.getApplicationID() + " | "
+                        + app.getStudent().getStudentID() + " | "
+                        + app.getInternship().getInternshipTitle() + " | "
+                        + app.getStatus());
+            }
         }
-
-        System.out.printf("%-15s %-20s %-25s %-10s%n", 
-            "APPLICATION ID", "STUDENT", "INTERNSHIP", "STATUS");
-        System.out.println("-".repeat(80));
-        
-        for (int i = 0; i < applications.size(); i++) {
-            Application app = applications.get(i);
-            System.out.printf("%-15s %-20s %-25s %-10s%n",
-                app.getApplicationID().substring(0, Math.min(12, app.getApplicationID().length())),
-                app.getStudent.getName(),
-                app.getInternship.getTitle().substring(0, Math.min(22, app.getInternship.getTitle().length())),
-                app.getStatus());
-        }
+        if (!any) System.out.println("No applications for your internships.");
+    }
     }
 
     private void manageApplications(){
@@ -143,7 +136,13 @@ public class CompanyUI implements FilterOptions, LogIn{
         System.out.println("Enter Application ID to approve/reject:");
         String appID = scanner.nextLine();
 
-        Application selectedApp = findApplicationByID(appID);
+        Application selectedApp = null;
+        for (Application app : appController.getApplications()) {
+            if (app.getApplicationID().equals(appID) && app.getInternship().getCompanyName().equalsIgnoreCase(currentUser.getCompanyName())) {
+                selectedApp = app;
+                break;
+            }
+        }
         if (selectedApp == null) {
             System.out.println("Application not found.");
             return;
@@ -154,20 +153,26 @@ public class CompanyUI implements FilterOptions, LogIn{
         System.out.print("Choose (1-2): ");
         int choice = scanner.nextInt();
 
-        if (choice == 1) internshipController.approveApplication(currentUser, selectedApp);
-        else if (choice == 2) internshipController.rejectApplication(currentUser, selectedApp);
-        else System.out.println("Cancelled.");
+        if (choice == 1) appController.approveApplication(currentUser, selectedApp);
+        else if (choice == 2) appController.rejectApplication(currentUser, selectedApp);
+        else System.out.println("Invalid.");
     }
 
     private void viewMyInternships(){ 
-        if (internships.isEmpty()) {
-            System.out.println("No internships created yet.");
-            return;
-        }
-
-        for (Internship i : internships) {
-            System.out.println("- " + i.getInternshipTitle() + " (" + i.getLevel() + ")");
+        List<Internship> all = internshipController.getInternships();      
+        boolean any = false;
+        for (Internship i : all) {
+            if (currentUser.getCompanyName().equalsIgnoreCase(i.getCompanyName())) {
+                any = true;
+                System.out.println(i.getInternshipTitle()
+                        + " | Status: " + i.getStatus()
+                        + " | Visible: " + i.getVisibility()
+                        + " | Level: " + i.getLevel()
+                        + " | Slots: " + i.getSlots()
+                        + " | Open: " + i.getOpenDate() + " to " + i.getCloseDate());
             }
+        }
+        if (!any) System.out.println("No internships yet.");
     }
 
 
@@ -178,31 +183,37 @@ public class CompanyUI implements FilterOptions, LogIn{
             return;
         }
 
-        System.out.println("Enter internship number to toggle visibility:");
-        int internshipNum = scanner.nextInt();
-         try {
-            Internship selectedInternship = internships.get(internshipNum - 1);
-            boolean newVisibility = !selectedInternship.isVisible(); // Toggle the current visibility
-            selectedInternship.setVisible(newVisibility);
-            System.out.println("Internship visibility updated to: " + (newVisibility ? "Visible" : "Hidden"));
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println("Invalid internship number.");
+        List<Internship> all = internshipController.getInternships();
+        List<Internship> mine = new ArrayList<>();
+        for (Internship i : all) {
+            if (currentUser.getCompanyName().equalsIgnoreCase(i.getCompanyName())) {
+                mine.add(i);
+            }
+        }
+        if (mine.isEmpty()) {
+            System.out.println("No internships to toggle.");
+            return;
+        }
+        for (int idx = 0; idx < mine.size(); idx++) {
+            System.out.println((idx + 1) + ") " + mine.get(idx).getInternshipTitle()
+                    + " (visible=" + mine.get(idx).getVisibility() + ")");
+        }
+        System.out.print("Choose internship to toggle: ");
+        try {
+            int pick = scanner.nextInt();         
+            int idx = pick - 1;
+            if (idx < 0 || idx >= mine.size()) {
+                System.out.println("Invalid index.");
+                return;
+            }
+            internshipController.toggleVisibility(mine.get(idx));          
+        } catch (Exception e) {
+            System.out.println("Invalid input.");
         }
     }
 
     private void filterApplications(String criteria, String value){
         
-    }
-
-
-    //helper method 
-    private Application findApplicationById(String appId) {
-        for (Application app : applications) {
-            if (app.getApplicationID().equals(appId)) {
-                return app;
-            }
-        }
-        return null;
     }
 }
 

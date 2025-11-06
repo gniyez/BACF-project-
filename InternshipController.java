@@ -6,6 +6,10 @@ import java.sql.Date;
 public class InternshipController implements FilterOptions{
         private List<Internship> internships = new ArrayList<>();
 
+        public List <Application> getApplications(){
+        return applications;
+    }
+
         public void createInternship(CompanyRepresentative company_rep,
                                  String title, String description,
                                  String level, String preferredMajor,
@@ -13,12 +17,12 @@ public class InternshipController implements FilterOptions{
         if (slots>10){
             throw new IllegalArgumentException("Maximum of 10 slots allowed per internship listing");
         }
-        long companyInternshipCount = internships.stream().filter(i -> i.getCompanyName().equalsIgnoreCase(i.getCompanyName())).count();
-        if (companyInternshipCount >5){
+        long companyInternshipCount = internships.stream().filter(i -> company_rep.getCompanyName().equalsIgnoreCase(i.getCompanyName())).count();
+        if (companyInternshipCount >= 5){
             throw new IllegalStateException("Each company can create at most 5 internship listings");
         }
         Internship internship = new Internship(title, description, level, preferredMajor, "PENDING",
-        Date openDate, Date closeDate, i.getCompanyName(), int slots);
+        openDate, closeDate, company_rep.getCompanyName(), slots);
         internships.add(internship);
     }
     

@@ -7,7 +7,7 @@ public class ApplicationController{
     //create an application list so that can filter later 
     private List<Application> applications=new ArrayList<>();
 
-    private List <Application> getApplications(){
+    public List <Application> getApplications(){
         return applications;
     }
 
@@ -32,7 +32,7 @@ public class ApplicationController{
     }
 
     public boolean checkEligibility(Student student ,Internship internship){
-        int year=student.getYear();
+        int year=student.getYearOfStudy();
         String level=internship.getLevel();
          if (year <= 2) {
             return level.equalsIgnoreCase("BASIC");
@@ -52,7 +52,7 @@ public class ApplicationController{
                 found=true;
                 System.out.println("--------------");
                 System.out.println("Application ID:"+app.getApplicationID());
-                System.out.println("Internship:"+app.getInternship.getTitle());
+                System.out.println("Internship:"+app.getInternship.getInternshipTitle());
                 System.out.println("Level"+app.getInternship.getLevel());
                 System.out.println("Application status:"+app.getStatus());
             }
@@ -71,7 +71,7 @@ public class ApplicationController{
             return;
         }
         updateApplicationStatus(app,"ACCEPTED");
-        internship.setSlots(internship.getSlot()-1);
+        internship.setSlots(internship.getSlots()-1);
         if (internship.getSlots()==0){
             internship.setStatus("FILLED");
         }

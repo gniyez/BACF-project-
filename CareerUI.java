@@ -1,7 +1,10 @@
 import java.util.Scanner;
-
+import java.util.List;
+import java.util.Arraylist;
+import java.sql.Date;
 public class CareerUI {
     private CareerServiceController controller;
+    private InternshipController iCtrl;
     private Scanner sc;
 
     public CareerUI(CareerServiceController controller) {
@@ -17,7 +20,9 @@ public class CareerUI {
             System.out.println("3. Approve Internship");
             System.out.println("4. Reject Internship");
             System.out.println("5. Generate Internship Report");
-            System.out.println("6. Exit");
+            System.out.println("6.List of pending companies");
+            System.out.println("7.List of pending internships");
+            System.out.println("8. Exit");
 
             System.out.print("Enter your choice: ");
             int choice = sc.nextInt();
@@ -40,8 +45,15 @@ public class CareerUI {
                     generateReportFlow();
                     break;
                 case 6:
+                    listPendingReps();
+                    break;
+                case 7:
+                    listPendingInternships();
+                    break;
+                case 8:
                     System.out.println("Logging out...");
                     return;
+                
                 default:
                     System.out.println("Invalid choice. Try again.");
             }
@@ -97,4 +109,29 @@ public class CareerUI {
 
         controller.generateReport(status, major, level);
     }
+    private void listPendingReps(){
+        boolean any=false;
+        for (User u:users){
+            if (u instanceof CompanyRepresentative){
+                CompanyRepresentative r=(CompanyRepresentative)u;
+                if (!"APPROEVD".equals(r.getStatus()) && !"REJECTED".equals(r.getStatus())) {
+                    any = true;
+                    System.out.println("RepID=" + r.getUserID() + " | " + r.getCompanyName() + " | status=" + r.getStatus());
+                }
+            }
+        }
+        if (!any) System.out.println("No pending reps.");
+    }
+    private void listPendingInternships() {             
+        boolean any = false;
+        for (Internship i : iCtrl.getInternships()) {
+            if ("PENDING".equals(i.getStatus())) {
+                any = true;
+                System.out.println(i.getInternshipTitle() + " | " + i.getCompanyName() + " | Visible=" + i.getVisibility());
+            }
+        }
+        if (!any) System.out.println("No pending internships.");
+    }        
+        
+    
 }

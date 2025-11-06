@@ -1,15 +1,18 @@
 import java.util.Scanner;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Comparator;
+
 public class StudentUI{
      private ApplicationController appController;
-     private FilterOptions filterOptions;
-     private List<Internship> internships;
+     private InternshipController internshipController;
      private Scanner scanner;
-     private Student student
+     private Student currentUser;
 
-     public StudentUI(){
-          this.appController = new ApplicationController();
-          this.filterOptions = new DefaultFilterOptions(internships);
+     public StudentUI(Student currentUser, InternshipController internshipController, ApplicationController appController, List<Internship> internships){
+          this.currentUser = currentUser;
+          this.internshipController = internshipController; 
+          this.appController = appController;
           this.scanner = new Scanner(System.in);
           }    
     
@@ -27,7 +30,7 @@ public class StudentUI{
 
                int choice = new Scanner(System.in).nextInt();
                switch (choice){
-                    case 1 -> viewInternshipLists();
+                    case 1 -> listInternships();
                     case 2 -> applyInternship();
                     case 3 -> viewApplicationStatus();
                     case 4 -> filterInternshipLists();
@@ -42,12 +45,15 @@ public class StudentUI{
     }
 
      private void applyInternship(Student student,Internship internship){
-         viewInternshipLists();
-
-         if (internships.isEmpty()){
+          List<Internship> list = new ArrayList<>(internshipController.getInternships());
+          list.sort(Comparator.comparing(Internship::getInternshipTitle, String.CASE_INSENSITIVE_ORDER)); 
+          if (list.isEmpty()){
               System.out.println("No internships available to apply.");
               return;
-         }
+          }
+          for (int i = 0; i < list.size(); i++) {
+               System.out.println((i+1) + ") " + list.get(i).getInternshipTitle())       
+          }
 
          System.out.println("Enter internship number to apply: ")
          int internshipNumber = scanner.nextInt();
@@ -68,28 +74,69 @@ public class StudentUI{
           }
      }
 
-     public void viewInternshipLists(){
-          if (internships.isEmpty()) {
-            System.out.println("No internships available at the moment.");
-            return;
-          }
-
-          for (Internship i : internships){
-               System.out.println("-- " + i.getInternshipTitle() + " at " + i.getCompanyName());
-          }
-     }
+     private void listInternships() {                                 
+        List<Internship> list = new ArrayList<>(iCtrl.getInternships());      
+        list.sort(Comparator.comparing(Internship::getInternshipTitle, String.CASE_INSENSITIVE_ORDER)); // [ADDED] default alphabetical
+        if (list.isEmpty()) { System.out.println("No internships available."); return; } // [ADDED]
+        for (int i = 0; i < list.size(); i++) {
+            Internship t = list.get(i);
+            System.out.println((i+1) + ") " + t.getInternshipTitle()
+                + " | Level: " + t.getLevel()
+                + " | Status: " + t.getStatus()
+                + " | Company: " + t.getCompanyName()
+                + " | Visible: " + t.getVisibility()
+                + " | Slots: " + t.getSlots());
+        }
+    }
 
     public void viewApplicationStatus(Student student){
-        System.out.println("Displaying Application status for:"+student.getName());
         appController.viewApplicationStatus();
-
     }
     public void acceptPlacement(Student student,Application app){
-        appController.acceptPlacement(student,app);
+     List<Application> mine = new ArrayList<>();
+          for (Application app : appController.getApplications()) {              
+          if (app.getStudent() == current && "SUCCESSFUL".equals(app.getStatus())) {
+               mine.add(app);
+          }
+     }
+          if (mine.isEmpty()) { System.out.println("No successful offers to accept."); return; }
+          for (int i = 0; i < mine.size(); i++) {
+               Application app = mine.get(i);
+               System.out.println((i+1) + ") " + app.getApplicationID() + " -> " + app.getInternship().getInternshipTitle());
+         }
+         System.out.print("Choose which offer to accept: ");
+         try {
+               int idx = Integer.parseInt(sc.nextLine().trim()) - 1;
+               if (idx < 0 || idx >= mine.size()) { System.out.println("Invalid index."); return; }
+               appController.acceptPlacement(current, mine.get(idx));          
+          }  catch (Exception e) {
+               System.out.println("Invalid input.");
+          }
+    }
     }
     public void withdrawInternship(Student student,Application app){
-         appController.withdrawApplication(student,app);
+          List<Application> mine = new ArrayList<>();
+          for (Application app : appController.getApplications()) {
+          if (app.getStudent() == current && "PENDING".equals(app.getStatus())) {
+               mine.add(app);
+               }
+          }
+          if (mine.isEmpty()) { System.out.println("No pending applications to withdraw."); return; }
+          for (int i = 0; i < mine.size(); i++) {
+               Application app = mine.get(i);
+               System.out.println((i+1) + ") " + app.getApplicationID() + " -> " + app.getInternship().getInternshipTitle());
+          }
+          System.out.print("Choose which application to withdraw: ");
+          try {
+               int idx = Integer.parseInt(sc.nextLine().trim()) - 1;
+               if (idx < 0 || idx >= mine.size()) { System.out.println("Invalid index."); return; }
+               Application app = mine.get(idx);
+               appController.withdrawApplication(current, app, app.getInternship());  
+          } catch (Exception e) {
+               System.out.println("Invalid input.");
+          }
     }
+    
 
     public void filterInternshipLists(criteria,value){
          System.out.println("Filtering internships by"+criteria+"="+value);

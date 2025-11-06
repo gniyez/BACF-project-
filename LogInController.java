@@ -1,6 +1,6 @@
 import java.util.List;
 
-public class LogInController {
+public class LogInController implements Login {
     private List<User> users;
     private User currentUser;
 
