@@ -38,6 +38,7 @@ public class ApplicationController{
             return false;
         }      
     }
+    public void viewApplicationStatus
 
     public void withdrawApplication(Student student,Application app,Internship internship){
         updateApplicationStatus(app,"Withdrawn");
