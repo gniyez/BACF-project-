@@ -14,6 +14,7 @@ public class Student extends User{
     public String getStudentID(){
         return studentID;
     }
+    
     public String getMajor(){
         return major;
     }
