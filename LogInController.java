@@ -22,9 +22,9 @@ public class LogInController {
     }
 
     public void logout(){
-        if(currentuser!=null){
-            System.out.println("User "+currentuser.getName()+" logged out.");
-            currentuser=null;
+        if(currentUser!=null){
+            System.out.println("User "+currentUser.getName()+" logged out.");
+            currentUser=null;
         } else {
             System.out.println("No user is currently logged in.");
         }
@@ -41,6 +41,6 @@ public class LogInController {
         System.out.println("Password change failed. Invalid userID or old password.");
     }
     public User getCurrentUser(){ // Later use to route them to their UI
-        return currentuser;
+        return currentUser;
     }
 }

@@ -17,7 +17,7 @@ public class CareerServiceController{
     }
     private boolean isStaff(String staffID) {
         for (User user : users) {
-            if ((user instanceof CareerServiceStaff || user instanceof CareerService) && user.getUserID().equals(staffID)) {
+            if ((user instanceof CareerServiceStaff) && user.getUserID().equals(staffID)) {
                 return true;
             }
         }
@@ -25,8 +25,8 @@ public class CareerServiceController{
         return false;
     }
 
-    public String registerCompany(String userID, String name, String password, String companyID, String department, String position){
-        CompanyRepresentative rep = new CompanyRepresentative(userID, name, password, companyID, department, position);
+    public String registerCompany(String userID, String Company_name, String password, String companyID, String department, String position){
+        CompanyRepresentative rep = new CompanyRepresentative(userID, Company_name, password, companyID, department, position);
         users.add(rep);
         return "PENDING APPROVAL";
     }
@@ -96,14 +96,14 @@ public class CareerServiceController{
         System.out.println("=== Internship Opportunities Report ===");
         List<Internship> filtered = new ArrayList<>(internships);
 
-        if (statusFilter != null) {
-        filtered.retainAll(filter("status", statusFilter));
+        if (statusFilter != null&&!statusFilter.isBlank()) {
+            filtered.retainAll(filter("status", statusFilter));
         }
-        if (majorFilter != null) {
-        filtered.retainAll(filter("major", majorFilter));
+        if (majorFilter != null&&!statusFilter.isBlank()) {
+            filtered.retainAll(filter("major", majorFilter));
         }
-        if (levelFilter != null) {
-        filtered.retainAll(filter("level", levelFilter));
+        if (levelFilter != null &&!statusFilter.isBlank()) {
+            filtered.retainAll(filter("level", levelFilter));
         }
 
         for (Internship internship : filtered) {

@@ -1,11 +1,15 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream;
-import.java.sql.Date;
+import java.sql.Date;
 
 public class ApplicationController{
     //create an application list so that can filter later 
     private List<Application> applications=new ArrayList<>();
+
+    private List <Application> getApplications(){
+        return applications;
+    }
 
     public void applyInternship(Student student,Internship internship){
         long count=applications.stream()
@@ -41,10 +45,10 @@ public class ApplicationController{
         }      
     }
     public void viewApplicationStatus(Student student){
-        System.out.println("Applications for:"+student.getName());
+        System.out.println("Applications for: "+student.getName());
         boolean found=false;
         for (Application app:applications){
-            if(app.getStudent().equals(student)){
+            if(app.getStudent() == student){
                 found=true;
                 System.out.println("--------------");
                 System.out.println("Application ID:"+app.getApplicationID());
@@ -62,8 +66,15 @@ public class ApplicationController{
         System.out.println("Slots restored .Avaliable slots :"+internship.getSlots());
     }
     public void acceptPlacement(Student student,Application app){
+        if (!"SUCCESSFUL".equals(app.getStatus())){
+            System.out.println("Cannot accept placement. Application not successful.");
+            return;
+        }
         updateApplicationStatus(app,"ACCEPTED");
         internship.setSlots(internship.getSlot()-1);
+        if (internship.getSlots()==0){
+            internship.setStatus("FILLED");
+        }
         for (Application otherApp:applications){
             if (otherApp!= app && otherApp.getStudent()== student){
                 if(!"WITHDRAWN".equals(otherApp.getStatus()) && !"ACCEPTED".equals(otherApp.getStatus())){
@@ -86,5 +97,5 @@ public class ApplicationController{
         System.out.println("Application status updated to "+status);
     }
 
-    
+
 }
