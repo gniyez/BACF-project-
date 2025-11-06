@@ -7,7 +7,7 @@ public class Application{
     public Application(Student student ,Internship internship){
         this.student = student;
         this.internship = internship;
-        this.status = 'PENDING';
+        this.status = "PENDING";
         this.applicationID = generateApplicationID();
     }
     public Student getStudent(){
@@ -34,4 +34,5 @@ public class Application{
     public void setStatus(String status){
         this.status = status;
     }
+
 }
