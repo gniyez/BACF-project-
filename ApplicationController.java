@@ -3,6 +3,7 @@ import java.util.List;
 
 
 public class ApplicationController{
+    //create an application list so that can filter later 
     private List<Application> applications=new ArrayList<>();
 
     public void applyInternship(Student student,Internship internship){
@@ -10,7 +11,7 @@ public class ApplicationController{
                    .filter(a->a.getStudent().equals(student))
                    .count();
         if (count>=3){
-            System.out.println("You have reached the maximum number of application")
+            System.out.println("You have reached the maximum number of application");
             return;
         }
 
@@ -26,39 +27,39 @@ public class ApplicationController{
 
     public boolean checkEligibility(Student student ,Internship internship){
         int year=student.getYear();
-        String level=internship.setLevel();
-        if (year<=2){
-            internship.setLevel("Basic");
-        }
-        else if (year>=3){
-            return internship.setLevel("Basic")||
-                   internship.setLevel("Intermediate")||
-                   internship.setLevel("Advanced");
-        }
-        else{
+        String level=internship.getLevel();
+         if (year <= 2) {
+            return level.equalsIgnoreCase("BASIC");
+        } else if (year >= 3) {
+            return level.equalsIgnoreCase("BASIC") || 
+                   level.equalsIgnoreCase("INTERMEDIATE") || 
+                   level.equalsIgnoreCase("ADVANCED");
+        } else {
             return false;
         }      
-        
     }
-    public void withdrawApplication(Student student,Application app){
-        app.setStatus("WITHDRAWN");
-        System.out.println("Application withdraw by "+student.getName());
+
+    public void withdrawApplication(Student student,Application app,Internship internship){
+        updateApplicationStatus(app,"Withdrawn");
+        internship.setSlots(internship.getSlot()+1);
+        System.out.println("Application withdrawn by "+student.getName());
+        System.out.println("Slots restored .Avaliable slots :"+internship.getSlots());
     }
     public void acceptPlacement(Student student,Application app){
-        app.setStatus("Accepted");
+        updateApplicationStatus(app,"Accepted");
         System.out.println("Placement accepted for "+student.getName());
     }
-    public void approveApplication(Company rep,Application app){
+    public void approveApplication(CompanyRepresentative rep,Application app){
         app.setStatus("APPROVED");
-        System.out.println(rep.getCompanyname()+"approved application"+app.getApplicationID());
+        System.out.println(rep.getCompanyName()+"approved application"+app.getApplicationID());
     }
-    public void rejectApplication(Company rep,Application app){
+    public void rejectApplication(CompanyRepresentative rep,Application app){
         app.setStatus("REJECTED");
-        System.out.println(rep.getCompanyname()+"rejected application"+app.getApplicationID());
+        System.out.println(rep.getCompanyName()+"rejected application"+app.getApplicationID());
 
     }
-    public void updateApplicationStatus(Applciation app,String status){
+    public void updateApplicationStatus(Application app,String status){
         app.setStatus(status);
-        System.out.println("Application status updated to"+status);
+        System.out.println("Application status updated to "+status);
     }
 }
