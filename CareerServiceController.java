@@ -2,59 +2,106 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class CareerServiceController {
-    private List<User> users = new ArrayList<>();
+    private List<User> users;
+    private List<Internship> internships;
 
-    public CareerServiceController() {
-        //
+    public CareerServiceController(List<User> users, List<Internship> internships) {
+        this.users = users;
+        this.internships = internships;
     }
 
     public void addUser(User user) {
         users.add(user);
     }
+    private boolean isStaff(String staffID) {
+        for (User user : users) {
+            if ((user instanceof CareerServiceStaff || user instanceof CareerService) && user.getUserID().equals(staffID)) {
+                return true;
+            }
+        }
+        System.out.println("Invalid staff ID: " + staffID);
+        return false;
+    }
 
     public String registerCompany(String userID, String name, String password, String companyID, String department, String position){
         CompanyRepresentative rep = new CompanyRepresentative(userID, name, password, companyID, department, position);
         users.add(rep);
-        return "Pending Approval";
+        return "PENDING APPROVAL";
     }
-    public boolean approveCompany(String staffID, string repID){
-        boolean isStaff = false;
-        for (User user : users) {
-            if (user instanceof CareerServiceStaff && user.getUserID().equals(staffID)) {
-                isStaff = true;
-                break;
-            }
-        }
-        if (!isStaff) {
-            return false; // Not a valid staff member
-        }
+    public boolean approveCompany(String staffID, String repID){
+        if (!isStaff(staffID)) return false;
+
         for (User user : users) {
             if (user instanceof CompanyRepresentative && user.getUserID().equals(repID)) {
-                CompanyRepresentative rep = (CompanyRepresentative) user;
-                rep.setStatus("APPROVED");
-                return true; // Approval successful
+                ((CompanyRepresentative) user).setStatus("APPROVED");
+                return true;
             }
         }
-        return false; // Company representative not found
+        System.out.println("Company representative not found: " + repID);
+        return false;
     }
-    public boolean rejectCompany(String staffID, string repID){
-        boolean isStaff = false;
-        for (User user : users) {
-            if (user instanceof CareerServiceStaff && user.getUserID().equals(staffID)) {
-                isStaff = true;
-                break;
-            }
-        }
-        if (!isStaff) {
-            return false; // Not a valid staff member
-        }
+    public boolean rejectCompany(String staffID, String repID){
+        if (!isStaff(staffID)) return false;
+
         for (User user : users) {
             if (user instanceof CompanyRepresentative && user.getUserID().equals(repID)) {
-                CompanyRepresentative rep = (CompanyRepresentative) user;
-                rep.setStatus("REJECTED");
-                return true; // Rejection successful
+                ((CompanyRepresentative) user).setStatus("REJECTED");
+                return true;
             }
         }
-        return false; // Company representative not found
+        System.out.println("Company representative not found: " + repID);
+        return false;
+
     }
+    public boolean approveWithdrawal(String staffID, Application app){
+        if (!isStaff(staffID)) return false;
+        app.setStatus("WITHDRAWN");
+        System.out.println("Withdrawal request approved for application ID: " + app.getApplicationID());
+        return true;
+    }
+    public boolean rejectWithdrawal(String staffID, Application app){
+        if (!isStaff(staffID)) return false;
+        System.out.println("Withdrawal request rejected for application ID: " + app.getApplicationID());
+        return true;
+    }
+public boolean approveInternship(String staffID, Internship internship) {
+    if (!isStaff(staffID)) return false;
+
+    internship.setInternshipStatus("APPROVED");
+    internship.setVisibility(true);
+    System.out.println("Internship approved: " + internship.getInternshipTitle());
+    return true;
+}
+
+public boolean rejectInternship(String staffID, Internship internship) {
+    if (!isStaff(staffID)) return false;
+
+    internship.setInternshipStatus("REJECTED");
+    internship.setVisibility(false);
+    System.out.println("Internship rejected: " + internship.getInternshipTitle());
+    return true;
+}
+
+public void generateReport(String statusFilter, String majorFilter, String levelFilter) {
+    System.out.println("=== Internship Opportunities Report ===");
+
+    for (Internship internship : internships) {
+        boolean matchStatus = (statusFilter == null || internship.getInternshipStatus().equalsIgnoreCase(statusFilter));
+        boolean matchMajor = (majorFilter == null || internship.getPreferredMajor().equalsIgnoreCase(majorFilter));
+        boolean matchLevel = (levelFilter == null || internship.getLevel().equalsIgnoreCase(levelFilter));
+
+        if (matchStatus && matchMajor && matchLevel) {
+            System.out.println("\nTitle: " + internship.getInternshipTitle());
+            System.out.println("Company: " + internship.getCompanyName());
+            System.out.println("Status: " + internship.getInternshipStatus());
+            System.out.println("Level: " + internship.getLevel());
+            System.out.println("Preferred Major: " + internship.getPreferredMajor());
+            System.out.println("Open Date: " + internship.getOpenDate());
+            System.out.println("Close Date: " + internship.getCloseDate());
+            System.out.println("Slots: " + internship.getSlots());
+            System.out.println("Visible to Students: " + internship.getVisibility());
+        }
+    }
+    System.out.println("=== End of Report ===");
+}
 }
