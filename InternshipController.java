@@ -6,8 +6,8 @@ import java.sql.Date;
 public class InternshipController implements FilterOptions{
         private List<Internship> internships = new ArrayList<>();
 
-        public List <Application> getApplications(){
-        return applications;
+        public List <Internship> getInternships(){
+        return internships;
     }
 
         public void createInternship(CompanyRepresentative company_rep,
