@@ -1,13 +1,15 @@
 import java.util.List;
 import java.util.ArrayList;
 
-public class CareerServiceController {
+public class CareerServiceController{
     private List<User> users;
     private List<Internship> internships;
+    private FilterOptions filterOptions
 
     public CareerServiceController(List<User> users, List<Internship> internships) {
         this.users = users;
         this.internships = internships;
+        this.filterOptions = new DefaultFilterOptions(internships);
     }
 
     public void addUser(User user) {
@@ -64,41 +66,47 @@ public class CareerServiceController {
         System.out.println("Withdrawal request rejected for application ID: " + app.getApplicationID());
         return true;
     }
-public boolean approveInternship(String staffID, Internship internship) {
-    if (!isStaff(staffID)) return false;
+    public boolean approveInternship(String staffID, Internship internship) {
+        if (!isStaff(staffID)) return false;
 
-    internship.setInternshipStatus("APPROVED");
-    internship.setVisibility(true);
-    System.out.println("Internship approved: " + internship.getInternshipTitle());
-    return true;
-}
-
-public boolean rejectInternship(String staffID, Internship internship) {
-    if (!isStaff(staffID)) return false;
-
-    internship.setInternshipStatus("REJECTED");
-    internship.setVisibility(false);
-    System.out.println("Internship rejected: " + internship.getInternshipTitle());
-    return true;
-}
-public Internship findInternshipByTitle(String title) {
-    for (Internship internship : internships) {
-        if (internship.getInternshipTitle().equalsIgnoreCase(title)) {
-            return internship;
-        }
+        internship.setInternshipStatus("APPROVED");
+        internship.setVisibility(true);
+        System.out.println("Internship approved: " + internship.getInternshipTitle());
+        return true;
     }
-    return null;
-}
 
-public void generateReport(String statusFilter, String majorFilter, String levelFilter) {
-    System.out.println("=== Internship Opportunities Report ===");
+    public boolean rejectInternship(String staffID, Internship internship) {
+        if (!isStaff(staffID)) return false;
 
-    for (Internship internship : internships) {
-        boolean matchStatus = (statusFilter == null || internship.getInternshipStatus().equalsIgnoreCase(statusFilter));
-        boolean matchMajor = (majorFilter == null || internship.getPreferredMajor().equalsIgnoreCase(majorFilter));
-        boolean matchLevel = (levelFilter == null || internship.getLevel().equalsIgnoreCase(levelFilter));
+        internship.setInternshipStatus("REJECTED");
+        internship.setVisibility(false);
+        System.out.println("Internship rejected: " + internship.getInternshipTitle());
+        return true;
+    }
+    public Internship findInternshipByTitle(String title) {
+        for (Internship internship : internships) {
+            if (internship.getInternshipTitle().equalsIgnoreCase(title)) {
+                return internship;
+            }
+        }
+        return null;
+    }
+    
+    public void generateReport(String statusFilter, String majorFilter, String levelFilter) {
+        System.out.println("=== Internship Opportunities Report ===");
+        List<Internship> filtered = new ArrayList<>(internships);
 
-        if (matchStatus && matchMajor && matchLevel) {
+        if (statusFilter != null) {
+        filtered.retainAll(filter("status", statusFilter));
+        }
+        if (majorFilter != null) {
+        filtered.retainAll(filter("major", majorFilter));
+        }
+        if (levelFilter != null) {
+        filtered.retainAll(filter("level", levelFilter));
+        }
+
+        for (Internship internship : filtered) {
             System.out.println("\nTitle: " + internship.getInternshipTitle());
             System.out.println("Company: " + internship.getCompanyName());
             System.out.println("Status: " + internship.getInternshipStatus());
@@ -109,7 +117,6 @@ public void generateReport(String statusFilter, String majorFilter, String level
             System.out.println("Slots: " + internship.getSlots());
             System.out.println("Visible to Students: " + internship.getVisibility());
         }
+        System.out.println("=== End of Report ===");
     }
-    System.out.println("=== End of Report ===");
-}
 }

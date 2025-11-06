@@ -1,12 +1,17 @@
 public class CompanyUI implements FilterOptions, LogIn{
+    private LogInController logInController;
+    private InternshipController internshipController;
     private ApplicationController appController;
     private CompanyRepresentative currentUser;
     private Scanner scanner;
     private List<Internship> internships;
     private List<Application> applications;
 
-    public CompanyUI(ApplicationController appController, CompanyRepresentative currentUser){
+     public CompanyUI(LogInController logInController, ApplicationController appController, 
+                    InternshipController internshipController, CompanyRepresentative currentUser) {
+        this.logInController = logInController;
         this.appController = appController;
+        this.internshipController = internshipController;
         this.currentUser = currentUser;
         this.scanner = new Scanner(System.in);
         this.internships = new ArrayList<>();
@@ -14,7 +19,14 @@ public class CompanyUI implements FilterOptions, LogIn{
     }
 
     public void start(){
-        System.out.println("Welcome," + currentUser.getName() + "!");
+        System.out.println("COMPANY REPRESENATIVE LOGIN");
+        System.out.println("═".repeat(30));
+        System.out.println("Enter your User ID:");
+        String userID = scanner.nextLine();
+        System.out.println("Enter your Password:");
+        String password = scanner.nextLine();
+        logInController.logIn(userID, password);
+       
         showMainMenu();
     }
 
@@ -43,7 +55,7 @@ public class CompanyUI implements FilterOptions, LogIn{
                 case 6 -> filterApplications();
                 case 0 -> {
                     logout();
-                    System.out,prinln("Goodbye!");
+                    System.out.prinln("Goodbye!");
                     return;
                 deafult -> System.out.println("Invalid choice. Please try again.");
             }
@@ -85,7 +97,7 @@ public class CompanyUI implements FilterOptions, LogIn{
             int slots = scanner.nextInt();
             slots = Math.min(slots, 10); //enforce max slots
 
-            Internship internship = new Internship(title, description, level, preferredMajor, openDate, closeDate, slots, currentUser.getCompanyID());
+            Internship internship = new Internship(title, description, level, preferredMajor, "PENDING",openDate, closeDate, currentUser.getCompanyName(), slots);
 
             internship.setVisible(true);
             internships.add(internship);
@@ -116,8 +128,8 @@ public class CompanyUI implements FilterOptions, LogIn{
             Application app = applications.get(i);
             System.out.printf("%-15s %-20s %-25s %-10s%n",
                 app.getApplicationID().substring(0, Math.min(12, app.getApplicationID().length())),
-                app.student.getName(),
-                app.internship.getTitle().substring(0, Math.min(22, app.internship.getTitle().length())),
+                app.getStudent.getName(),
+                app.getInternship.getTitle().substring(0, Math.min(22, app.getInternship.getTitle().length())),
                 app.getStatus());
         }
     }
@@ -143,8 +155,8 @@ public class CompanyUI implements FilterOptions, LogIn{
         System.out.print("Choose (1-2): ");
         int choice = scanner.nextInt();
 
-        if (choice == 1) approveApplication(currentUser, selectedApp);
-        else if (choice == 2) rejectApplication(currentUser, selectedApp);
+        if (choice == 1) internshipController.approveApplication(currentUser, selectedApp);
+        else if (choice == 2) internshipController.rejectApplication(currentUser, selectedApp);
         else System.out.println("Cancelled.");
     }
 
@@ -169,14 +181,14 @@ public class CompanyUI implements FilterOptions, LogIn{
 
         System.out.println("Enter internship number to toggle visibility:");
         int internshipNum = scanner.nextInt();
-        try{
+         try {
             Internship selectedInternship = internships.get(internshipNum - 1);
-            selectedInternship.setVisible(visible);
-            System.out.println("Internship visibility updated.");
-        } catch (IndexOutOfBoundsException e){
+            boolean newVisibility = !selectedInternship.isVisible(); // Toggle the current visibility
+            selectedInternship.setVisible(newVisibility);
+            System.out.println("Internship visibility updated to: " + (newVisibility ? "Visible" : "Hidden"));
+        } catch (IndexOutOfBoundsException e) {
             System.out.println("Invalid internship number.");
         }
-
     }
 
     private void filterApplications(String criteria, String value){

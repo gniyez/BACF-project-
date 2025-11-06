@@ -10,8 +10,13 @@ public class Application{
         this.status = 'PENDING';
         this.applicationID = generateApplicationID();
     }
-
-    private String generateApplicationID(){
+    public Student getStudent(){
+        return student;
+    }
+    public Internship getInternship(){
+        return internship;
+    }
+    public String generateApplicationID(){
         return "APP-" + student.getStudentID() + "-" + internship.getInternshipID();
     }
 
@@ -23,10 +28,10 @@ public class Application{
         this.applicationID = applicationID;
     }
 
-    public getStatus(){
+    public String getStatus(){
         return status;
     }
-    public setStatus(String status){
+    public void setStatus(String status){
         this.status = status;
     }
 }

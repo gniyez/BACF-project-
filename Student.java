@@ -9,7 +9,12 @@ public class Student extends User{
         this.yearOfStudy = yearOfStudy;
         
     }
-
+    public String getStudentID(){
+        return studentID;
+    }
+    public String getStudentID() {
+           return getUserID();
+}
     public String getMajor(){
         return major;
     }
@@ -25,8 +30,12 @@ public class Student extends User{
     public void setYearOfStudy(int yearOfStudy){
         this.yearOfStudy = yearOfStudy;
     }
+    public int getMaxApps() {
+        return maxApps;
+    }
 
     public void displayRole(){
-        System.out.println("I am a student")
+        System.out.println("I am a student");
     }
+
 }

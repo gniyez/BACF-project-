@@ -2,6 +2,16 @@ public abstract class User{
     private String userID;
     private String name;
     private String password= "password";
+    private FilterOptions savedFilterOptions;
+
+    //
+    public FilterOptions getSavedFilterOptions(){
+        return savedFilterOptions;
+    }
+    public void setSavedFilterOptions(FilterOptions savedFilterOptions){
+        this.savedFilterOptions = savedFilterOptions;
+    }
+    //
     public String getUserID(){
         return userID;
     }

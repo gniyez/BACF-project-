@@ -14,8 +14,8 @@ public class student UI{
     public void acceptPlacement(Student student,Application app){
           controller.acceptPlacement(student,app);
     }
-    public void withdrawInternship(Student student,Internship internship){
-         controller.withdrawApplication(student,internship)
+    public void withdrawInternship(Student student,Application app){
+         controller.withdrawApplication(student,app)
     }
     public void filterInternsshipLists(criteria,value){
          System.out.println("Filtering internships by"+criteria+"="+value);

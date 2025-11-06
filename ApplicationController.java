@@ -41,7 +41,7 @@ public class ApplicationController{
         
     }
     public void withdrawApplication(Student student,Application app){
-        app.setStatus("Withdrawn");
+        app.setStatus("WITHDRAWN");
         System.out.println("Application withdraw by "+student.getName());
     }
     public void acceptPlacement(Student student,Application app){
