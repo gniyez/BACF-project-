@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util
 
 public class ApplicationController{
     //create an application list so that can filter later 
@@ -38,7 +38,20 @@ public class ApplicationController{
             return false;
         }      
     }
-    public void viewApplicationStatus
+    public void viewApplicationStatus(Student student){
+        System.out.println("Applications for:"+student.getName());
+        boolean found=false;
+        for (Application app:applications){
+            if(app.getStudent().equals(student)){
+                found=true;
+                System.out.println("--------------");
+                System.out.println("Application ID:"+app.getApplicationID());
+                System.out.println("Internship:"+app.getInternship.getTitle());
+                System.out.println("Level"+app.getInternship.getLevel());
+                System.out.println("Application status:"+app.getStatus());
+            }
+        }
+    }
 
     public void withdrawApplication(Student student,Application app,Internship internship){
         updateApplicationStatus(app,"Withdrawn");
