@@ -5,6 +5,7 @@ public class StudentUI{
      private FilterOptions filterOptions;
      private List<Internship> internships;
      private Scanner scanner;
+     private Student student
 
      public StudentUI(){
           this.appController = new ApplicationController();
@@ -79,15 +80,15 @@ public class StudentUI{
      }
 
     public void viewApplicationStatus(Student student){
-        System.out.println("Displaying Application status for ");
-
+        System.out.println("Displaying Application status for:"+student.getName());
+        appController.viewApplicationStatus();
 
     }
     public void acceptPlacement(Student student,Application app){
-          appController.acceptPlacement(student,app);
+        appController.acceptPlacement(student,app);
     }
     public void withdrawInternship(Student student,Application app){
-         appController.withdrawApplication(student,app)
+         appController.withdrawApplication(student,app);
     }
 
     public void filterInternshipLists(criteria,value){
