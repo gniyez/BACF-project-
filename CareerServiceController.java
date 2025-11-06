@@ -4,7 +4,7 @@ import java.util.ArrayList;
 public class CareerServiceController{
     private List<User> users;
     private List<Internship> internships;
-    private FilterOptions filterOptions
+    private FilterOptions filterOptions;
 
     public CareerServiceController(List<User> users, List<Internship> internships) {
         this.users = users;
