@@ -7,11 +7,10 @@ public class CompanyUI implements FilterOptions, LogIn{
     private List<Internship> internships;
     private List<Application> applications;
 
-     public CompanyUI(LogInController logInController, ApplicationController appController, 
-                    InternshipController internshipController, CompanyRepresentative currentUser) {
-        this.logInController = logInController;
+    public CompanyUI(LogInController logInController,ApplicationController appController, InternshipController internshipcontroller CompanyRepresentative currentUser){
+        this.loginController = logInController;
         this.appController = appController;
-        this.internshipController = internshipController;
+        this.internshipcontroller = internshipcontroller;
         this.currentUser = currentUser;
         this.scanner = new Scanner(System.in);
         this.internships = new ArrayList<>();
