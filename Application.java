@@ -1,19 +1,23 @@
 public class Application{
-    private String applicationID;
-    public Student student;
-    public Internship internship;
-    public boolean status; //check this with class diagram and other data types 
-
-    public getApplicationID(){
-        return applicationID;
+    
+    private Student student;
+    private Internship internship;
+    private String status; 
+    public Application(Student student ,Internship internship,String status){
+        this.student=student;
+        this.internship=internship;
+        this.status='pending';
     }
-    public setApplicationID(String applicationID){
-        this.applicationID = applicationID;
+    public Student getStudent(){
+        return student;
     }
-    public getInternshipStatus(){
+    public Internship getInternship(){
+        return internship;
+    }
+    public getStatus(){
         return status;
     }
-    public setInternshipStatus(boolean status){
+    public setStatus(String status){
         this.status = status;
     }
 }
