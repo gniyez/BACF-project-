@@ -1,4 +1,4 @@
 public interface CompanyApplications{
-    void approveApp();
-    void rejectApp();
+    void approveApp(CompanyRepresentatve rep, Application app);
+    void rejectApp(CompanyRepresentatve rep, Application app);
 }
