@@ -31,7 +31,7 @@ public class CompanyUI implements FilterOptions, LogIn{
 
     private void showMainMenu(){
         while (true){
-            System.out.println("MAIN MENU");
+            System.out.println("COMPANY REPRESENTATIVE MENU");
             System.out.println("═".repeat(50));
             System.out.println("1.  Create New Internship");
             System.out.println("2.  View Applications");
@@ -205,4 +205,5 @@ public class CompanyUI implements FilterOptions, LogIn{
         return null;
     }
 }
+
 
