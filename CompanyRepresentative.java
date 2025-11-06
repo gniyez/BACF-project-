@@ -4,7 +4,7 @@ public class CompanyRepresentative extends User{
     private String position;
     private String status = "PENDING";
 
-    public CompanyRepresentive(String userID, String name, String password, String companyID, String department, String position) {
+    public CompanyRepresentative(String userID, String name, String password, String companyID, String department, String position) {
         super(userID, name, password);
         this.companyID = companyID;
         this.department = department;
