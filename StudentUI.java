@@ -9,10 +9,10 @@ public class student UI{
     }
 
     public void viewApplication status(){
-        System.out.println("Displaying Application status")
+        System.out.println("Displaying Application status");
     }
     public void acceptPlacement(Student student,Application app){
-          controller.withdrawApplication(student,internship)
+          controller.acceptPlacement(student,app);
     }
     public void withdrawInternship(Student student,Internship internship){
          controller.withdrawApplication(student,internship)
