@@ -18,7 +18,7 @@ public class ApplicationController implements studentApplication,companyApplicat
         }
     }
     public void withdrawApplication(Student student,Internship internship){
-        System .out.println("Application withdraw by "+stduent.getName());
+        System .out.println("Application withdraw by "+student.getName());
     }
     public void acceptPlacement(Student student,Application app){
         app.setStatus("Accepted");
