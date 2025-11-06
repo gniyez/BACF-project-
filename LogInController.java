@@ -1,18 +1,18 @@
-import java.util.list;
+import java.util.List;
 
 public class LogInController {
     private List<User> users;
-    private User currentuser;
+    private User currentUser;
 
     public LogInController(List<User> users){
         this.users=users;
-        this.currentuser=null;
+        this.currentUser=null;
     }
 
     public boolean login(String userID, String password){
         for(User user:users){
             if(user.getUserID().equals(userID) && user.getPassword().equals(password)){
-                currentuser=user;
+                currentUser=user;
                 System.out.println("Login successful. Welcome, "+user.getName()+"!");
                 return true;
             }
