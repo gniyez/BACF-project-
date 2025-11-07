@@ -1,18 +1,11 @@
 public class CareerServiceStaff extends User{
-    private String staffID;
     private String department;
-    public CareerServiceStaff(String userID, String name,
-                   String staffID, String department) {
-        super(userID, name);
-        this.staffID = staffID;
+    
+    public CareerServiceStaff(String staffID, String name, String department) {
+        super(staffID, name);
         this.department = department;
     }
-    public String getStaffID(){
-        return staffID;
-    }
-    public void setStaffID(String staffID){
-        this.staffID = staffID;
-    }
+
     public String getDepartment(){
         return department;
     }
