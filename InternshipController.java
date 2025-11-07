@@ -35,7 +35,7 @@ public class InternshipController implements FilterOptions{
                            "' visibility is now: " + newValue);
      }
     }
-
+    // can changed this ,since the filtering logic is already implemented in the default filter options class 
     public List<Internship> filterInternsshipLists(String criteria, String value){
         return internships.stream().filter(i -> {
             switch (criteria.toLowerCase()){
@@ -54,6 +54,11 @@ public class InternshipController implements FilterOptions{
             }
 
         }).collect(Collectors.toList());
+    }
+    // we can do this instead 
+    public List<Internship> filterInternsshipLists(String criteria, String value){
+        DefaultFilterOptions defaultFilter = new DefaultFilterOptions();
+        return defaultFilter.applyFilter(internships, criteria, value);
     }
 
     // maybe need to delete this !!!

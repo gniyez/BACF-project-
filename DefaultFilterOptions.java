@@ -8,15 +8,18 @@ public class DefaultFilterOptions implements FilterOptions{
             switch(criteria.toLowerCase()){
                 case "status":
                         return internship.getStatus().equalsIgnoreCase(value);
-                    case "preferredmajors":
+                case "preferredmajors":
                         return internship.getPreferredMajor().stream()
                                 .anyMatch(major -> major.equalsIgnoreCase(value));
-                    case "internshiplevel":
+                case "internshiplevel":
                         return internship.getLevel().equalsIgnoreCase(value);
-                    case "closingdate":
+                case "closingdate":
                         return internship.getCloseDate().equalsIgnoreCase(value);
-                    // Add other cases as necessary
-                    default:
+                case "Opendate":
+                        return internship.getOpenDate().equalsIgnoreCase(value);
+                case "companyname":
+                        return internship.getCompanyName().equalsIgnorecase(value);
+                default:
                         return true; // no filter if criteria unknown
             }
         }).collect(Collectors.toList());
