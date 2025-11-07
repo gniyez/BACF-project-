@@ -5,6 +5,7 @@ import java.sql.Date;
 
 public class InternshipController implements FilterOptions{
         private List<Internship> internships = new ArrayList<>();
+        private FilterOptions filterOptions;
 
         public List <Internship> getInternships(){
         return internships;
@@ -35,7 +36,8 @@ public class InternshipController implements FilterOptions{
                            "' visibility is now: " + newValue);
      }
     }
-    // can changed this ,since the filtering logic is already implemented in the default filter options class 
+    // can changed this ,since the filtering logic is already implemented in the default filter options class and internship controller should only manage the intenrhsip workflow .Since the filtering is done by all users , it should be done in another class so that if we neeed to add anything later , it will not affect the controller class based on OCP.
+    
     public List<Internship> filterInternsshipLists(String criteria, String value){
         return internships.stream().filter(i -> {
             switch (criteria.toLowerCase()){
@@ -56,9 +58,8 @@ public class InternshipController implements FilterOptions{
         }).collect(Collectors.toList());
     }
     // we can do this instead 
-    public List<Internship> filterInternsshipLists(String criteria, String value){
-        DefaultFilterOptions defaultFilter = new DefaultFilterOptions();
-        return defaultFilter.applyFilter(internships, criteria, value);
+    public List<Internship> filterInternsshipLists(String criteria, String value){   
+        return filterOptions.filter(criteria,value);
     }
 
     // maybe need to delete this !!!
