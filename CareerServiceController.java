@@ -1,20 +1,25 @@
+package project;
+
 import java.util.List;
-import java.util.ArrayList;
+import java.util.stream.Collectors;
 
-public class CareerServiceController{
+public class CareerServiceController implements FilterOptions{
     private List<User> users;
-    private List<Internship> internships;
-    private FilterOptions filterOptions;
+    private InternshipController internshipController;
 
-    public CareerServiceController(List<User> users, List<Internship> internships) {
+    public CareerServiceController(List<User> users, InternshipController internshipController) {
         this.users = users;
-        this.internships = internships;
-        this.filterOptions = new DefaultFilterOptions(internships);
+        this.internshipController = internshipController;
+    }
+    
+    public List<User> getUsers() {
+        return users;
     }
 
     public void addUser(User user) {
         users.add(user);
     }
+    
     private boolean isStaff(String staffID) {
         for (User user : users) {
             if ((user instanceof CareerServiceStaff) && user.getUserID().equals(staffID)) {
@@ -25,11 +30,13 @@ public class CareerServiceController{
         return false;
     }
 
-    public String registerCompany(String userID, String Company_name, String password, String companyID, String department, String position){
-        CompanyRepresentative rep = new CompanyRepresentative(userID, Company_name, password, companyID, department, position);
-        users.add(rep);
-        return "PENDING APPROVAL";
-    }
+    public String registerCompany(String email, String name, String companyName, 
+            String department, String position) {
+		CompanyRepresentative rep = new CompanyRepresentative(email, name, companyName, department, position);
+		users.add(rep);
+		return "PENDING APPROVAL";
+	}
+    
     public boolean approveCompany(String staffID, String repID){
         if (!isStaff(staffID)) return false;
 
@@ -84,7 +91,7 @@ public class CareerServiceController{
         return true;
     }
     public Internship findInternshipByTitle(String title) {
-        for (Internship internship : internships) {
+        for (Internship internship : internshipController.getInternships()) {
             if (internship.getInternshipTitle().equalsIgnoreCase(title)) {
                 return internship;
             }
@@ -93,17 +100,23 @@ public class CareerServiceController{
     }
     
     public void generateReport(String statusFilter, String majorFilter, String levelFilter) {
-        System.out.println("=== Internship Opportunities Report ===");
-        List<Internship> filtered = new ArrayList<>(internships);
+    	System.out.println("=== Internship Opportunities Report ===");
+        List<Internship> filtered = internshipController.getInternships();
 
-        if (statusFilter != null&&!statusFilter.isBlank()) {
-            filtered.retainAll(InternshipController.filter("status", statusFilter));
+        if (statusFilter != null && !statusFilter.isBlank()) {
+            filtered = filtered.stream()
+                .filter(i -> statusFilter.equalsIgnoreCase(i.getInternshipStatus()))
+                .collect(Collectors.toList());
         }
-        if (majorFilter != null&&!statusFilter.isBlank()) {
-            filtered.retainAll(InternshipController.filter("major", majorFilter));
+        if (majorFilter != null && !majorFilter.isBlank()) {
+            filtered = filtered.stream()
+                .filter(i -> majorFilter.equalsIgnoreCase(i.getPreferredMajor()))
+                .collect(Collectors.toList());
         }
-        if (levelFilter != null &&!statusFilter.isBlank()) {
-            filtered.retainAll(InternshipController.filter("level", levelFilter));
+        if (levelFilter != null && !levelFilter.isBlank()) {
+            filtered = filtered.stream()
+                .filter(i -> levelFilter.equalsIgnoreCase(i.getLevel()))
+                .collect(Collectors.toList());
         }
         if (filtered.isEmpty()) {
             System.out.println("No internships found matching the specified criteria.");
