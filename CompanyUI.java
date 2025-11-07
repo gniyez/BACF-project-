@@ -55,7 +55,7 @@ public class CompanyUI implements FilterOptions, LogIn{
                 case 3 -> manageApplications();
                 case 4 -> viewMyInternships();
                 case 5 -> toggleVisibility();
-                case 6 -> filterApplications();
+                case 6 -> filterInternships();
                 case 0 -> {
                     logout();
                     System.out.prinln("Goodbye!");
@@ -211,8 +211,26 @@ public class CompanyUI implements FilterOptions, LogIn{
             System.out.println("Invalid input.");
         }
     }
-
-    private void filterApplications(String criteria, String value){
+    @Overriding 
+    private void filterInternships(String criteria, String value){
+        List<Internship> filteredInternship=InternshipController.filter(critria,value);
+        filtered=filteredInternship.stream()
+                 .filter(internship->Internship.getCompanyName().equalsIgnoreCase(currentUser.getCompanyName()))
+        if (filter.isEmpty()){
+            System.out.println("No internships match the filter criteria.");
+            return;
+        } 
+        System.out.println("filtered internships:");
+        System.out.println("=======================");
+        System.out.println("Title | Status | Visible | Level | Slots | Open Date to Close Date");
+        for (Internship i : filtered){
+                System.out.println(i.getInternshipTitle()
+                        + " | Status: " + i.getStatus()
+                        + " | Visible: " + i.getVisibility()
+                        + " | Level: " + i.getLevel()
+                        + " | Slots: " + i.getSlots()
+                        + " | Open: " + i.getOpenDate() + " to " + i.getCloseDate());
+            }
         
     }
 }
