@@ -1,4 +1,4 @@
-import.java.sql.Date;
+import java.sql.Date;
 
 public class Internship{
     private String title;
