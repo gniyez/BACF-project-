@@ -97,15 +97,18 @@ public class CareerServiceController{
         List<Internship> filtered = new ArrayList<>(internships);
 
         if (statusFilter != null&&!statusFilter.isBlank()) {
-            filtered.retainAll(filter("status", statusFilter));
+            filtered.retainAll(InternshipController.filter("status", statusFilter));
         }
         if (majorFilter != null&&!statusFilter.isBlank()) {
-            filtered.retainAll(filter("major", majorFilter));
+            filtered.retainAll(InternshipController.filter("major", majorFilter));
         }
         if (levelFilter != null &&!statusFilter.isBlank()) {
-            filtered.retainAll(filter("level", levelFilter));
+            filtered.retainAll(InternshipController.filter("level", levelFilter));
         }
-
+        if (filtered.isEmpty()) {
+            System.out.println("No internships found matching the specified criteria.");
+            return;
+        }
         for (Internship internship : filtered) {
             System.out.println("\nTitle: " + internship.getInternshipTitle());
             System.out.println("Company: " + internship.getCompanyName());
