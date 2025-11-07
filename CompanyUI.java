@@ -2,6 +2,8 @@ import java.util.ArrayList;
 import java.sql.Date;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+
 
 public class CompanyUI implements FilterOptions, LogIn{
     private InternshipController internshipController;
@@ -212,7 +214,11 @@ public class CompanyUI implements FilterOptions, LogIn{
         }
     }
     @Overriding 
-    private void filterInternships(String criteria, String value){
+    private void filterInternships(){
+        System.out.println("Enter filter criteria :");
+        String critria = scanner.nextLine();
+        System.out.println("Enter filter value :");
+        String value = scanner.nextLine();
         List<Internship> filteredInternship=InternshipController.filter(critria,value);
         filtered=filteredInternship.stream()
                  .filter(internship->Internship.getCompanyName().equalsIgnoreCase(currentUser.getCompanyName()))
