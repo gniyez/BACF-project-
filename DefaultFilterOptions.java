@@ -19,6 +19,8 @@ public class DefaultFilterOptions implements FilterOptions{
                         return internship.getOpenDate().equalsIgnoreCase(value);
                 case "companyname":
                         return internship.getCompanyName().equalsIgnorecase(value);
+                case "visibility":
+                        return internship.getVisibility().equalsIgnoreCase(value);
                 default:
                         return true; // no filter if criteria unknown
             }
