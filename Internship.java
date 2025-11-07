@@ -1,20 +1,19 @@
-import java.sql.Date;
+import java.time.LocalDate;
 
-public class Internship{
+public class Internship {
     private String title;
     private String description;
     private String level;
     private String preferredMajor;
     private String status;
-    private Date openDate;
-    private Date closeDate;
+    private LocalDate openDate;
+    private LocalDate closeDate;
     private String companyName;
     private boolean isVisible;
-    private int slots = 10;
-   
+    private int slots;
 
     public Internship(String title, String description, String level, String preferredMajor, String status,
-        Date openDate, Date closeDate, String companyName, int slots){
+    		LocalDate openDate, LocalDate closeDate, String companyName, int slots){
         this.title = title;
         this.description = description;
         this.level = level;
@@ -23,13 +22,7 @@ public class Internship{
         this.openDate = openDate;
         this.closeDate = closeDate;
         this.companyName = companyName;
-        
-        if (slots > 10) {
-            this.slots = 10;
-        } else {
-            this.slots = slots;
-        }
-
+        this.slots = Math.min(slots, 10);
     }
 
     public String getInternshipTitle(){return title;}
@@ -47,11 +40,11 @@ public class Internship{
     public String getInternshipStatus(){return status;}
     public void setInternshipStatus(String status){this.status = status;}
 
-    public Date getOpenDate() {return openDate;}
-    public void setOpenDate(Date openDate) {this.openDate = openDate;}
+    public LocalDate getOpenDate() {return openDate;}
+    public void setOpenDate(LocalDate openDate) {this.openDate = openDate;}
 
-    public Date getCloseDate() {return closeDate;}
-    public void setCloseDate(Date closeDate) {this.closeDate = closeDate;}
+    public LocalDate getCloseDate() {return closeDate;}
+    public void setCloseDate(LocalDate closeDate) {this.closeDate = closeDate;}
 
     public String getCompanyName() {return companyName;}
     public void setCompanyName(String companyName) {this.companyName = companyName;}
@@ -60,19 +53,21 @@ public class Internship{
     public void setVisibility(boolean isVisible) {this.isVisible = isVisible;}
 
     public int getSlots() {return slots;}
-    public void setSlots(int slots) {
-        if (slots > 10) {
-            this.slots = 10;
-        } else {
-            this.slots = slots;
-        }
+    public void setSlots(int slots) { this.slots = Math.min(slots, 10); }
+    
+    public boolean isOpenForApplication() {
+        LocalDate today = LocalDate.now();
+        return "APPROVED".equals(status) && 
+               !today.isBefore(openDate) && 
+               !today.isAfter(closeDate) &&
+               slots > 0;
     }
-    public void setStatus(String status){
-        this.status=status;
-    }
-    public String getStatus(){
-         return status;
+
+    public boolean isVisibleToStudents() {
+        return isVisible && "APPROVED".equals(status);
     }
 
 }
+
+
 
