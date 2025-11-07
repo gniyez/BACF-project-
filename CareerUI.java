@@ -22,7 +22,8 @@ public class CareerUI {
             System.out.println("5. Generate Internship Report");
             System.out.println("6.List of pending companies");
             System.out.println("7.List of pending internships");
-            System.out.println("8. Exit");
+            System.out.println("8. Filter Internships");
+            System.out.println("9. Logout");
 
             System.out.print("Enter your choice: ");
             int choice = sc.nextInt();
@@ -51,8 +52,12 @@ public class CareerUI {
                     listPendingInternships();
                     break;
                 case 8:
+                     filteredInternship();
+                     break;
+                case 9:
                     System.out.println("Logging out...");
                     return;
+                
                 
                 default:
                     System.out.println("Invalid choice. Try again.");
@@ -132,6 +137,24 @@ public class CareerUI {
         }
         if (!any) System.out.println("No pending internships.");
     }        
-        
+    private void filteredInternship(){
+        System.out.println("Enter filter criteria: ");
+        String criteria = sc.nextLine();
+        System.out.println("Enter filter value: ");
+        String value = sc.nextLine();
+        List<Internship> filtered = InternshipController.filter(criteria, value);
+        if (filtered.isEmpty()) {
+            System.out.println("No internships found matching the specified criteria.");
+            return;
+        }
+        for (Internship internship : filtered) {
+            System.out.println("\nTitle: " + internship.getInternshipTitle());
+            System.out.println("Company: " + internship.getCompanyName());
+            System.out.println("Level: " + internship.getLevel());
+            System.out.println("Preferred Major: " + internship.getPreferredMajor());
+            System.out.println("Status: " + internship.getStatus());
+            System.out.println("Visibility: " + internship.getVisibility());
+          
+        }
     
 }
