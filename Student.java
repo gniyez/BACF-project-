@@ -2,7 +2,7 @@ public class Student extends User{
     private String major;
     private int yearOfStudy;
     private int maxApps = 3;
-    private studentID
+    private String studentID;
 
     public Student(String userID, String name, String major, int yearOfStudy){
         super(userID, name);
