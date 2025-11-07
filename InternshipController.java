@@ -4,23 +4,26 @@ import java.util.stream.Collectors;
 import java.sql.Date;
 
 public class InternshipController implements FilterOptions{
-        private List<Internship> internships = new ArrayList<>();
-        private FilterOptions filterOptions;
-
+    private List<Internship> internships = new ArrayList<>();
+    private FilterOptions filterOptions;
+    public InternshipController(List<Internship> internships){
+            this.internships=internshios;
+            this.filterOptions = new DefaultFilterOptions(internships);
+        }
         public List <Internship> getInternships(){
-        return internships;
-    }
+            return internships;
+        }
 
-        public void createInternship(CompanyRepresentative company_rep,
+    public void createInternship(CompanyRepresentative company_rep,
                                  String title, String description,
                                  String level, String preferredMajor,
                                  Date openDate, Date closeDate, int slots){
         if (slots>10){
-            throw new IllegalArgumentException("Maximum of 10 slots allowed per internship listing");
+              throw new IllegalArgumentException("Maximum of 10 slots allowed per internship listing");
         }
         long companyInternshipCount = internships.stream().filter(i -> company_rep.getCompanyName().equalsIgnoreCase(i.getCompanyName())).count();
         if (companyInternshipCount >= 5){
-            throw new IllegalStateException("Each company can create at most 5 internship listings");
+               throw new IllegalStateException("Each company can create at most 5 internship listings");
         }
         Internship internship = new Internship(title, description, level, preferredMajor, "PENDING",
         openDate, closeDate, company_rep.getCompanyName(), slots);
@@ -28,7 +31,7 @@ public class InternshipController implements FilterOptions{
     }
     
     public void toggleVisibility(Internship internship) {
-    if (internships.contains(internship)) {
+      if (internships.contains(internship)) {
         boolean newValue = !internship.getVisibility();  // flip
         internship.setVisibility(newValue);
 
@@ -37,7 +40,7 @@ public class InternshipController implements FilterOptions{
      }
     }
     // can changed this ,since the filtering logic is already implemented in the default filter options class and internship controller should only manage the intenrhsip workflow .Since the filtering is done by all users , it should be done in another class so that if we neeed to add anything later , it will not affect the controller class based on OCP.
-    
+    //violates srp since the controller should only manage the internship workflow
     public List<Internship> filterInternsshipLists(String criteria, String value){
         return internships.stream().filter(i -> {
             switch (criteria.toLowerCase()){

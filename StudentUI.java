@@ -138,8 +138,26 @@ public class StudentUI{
     }
     
 
-    public void filterInternshipLists(criteria,value){
-         System.out.println("Filtering internships by"+criteria+"="+value);
+    public void filterInternshipLists(){
+         System.out.println("== Filter internships ==");
+         System.out.println("Enter filter criteria (e.g., level:Intern, closingDate:2023-12-31): ");
+         String criteria = scanner.nextLine().trim();
+         System.out.println("Enter filter value: ");
+         String value=scanner.nextLine().trim();
+         List<Internship> filteredInternships = internshipController.filterInternships(criteria,value);
+         filtered=filteredInternships.stream()
+                 .filter(Internship->Internship.getVisibility().equalsIgnoreCase("VISIBLE"))
+                 .filter(Internship->Internship.getStatus().equalsIgnoreCase("APPROVED"))
+                 .collect(Collectors.toList();
+          if filteredInternships.isEmpty()){
+               System.out.println("No internships match the filter criteria.");
+          } else {
+               System.out.println("Filtered Internships:");
+               for (Internship internship : filteredInternships){
+                    System.out.println("Company Name:"+internship.getCompanyName()+"Title:"+internship.getInternshipTitle() + "  Level: " + internship.getLevel() + " Closing Date: " + internship.getCloseDate());
+               }
+          }    
+
     }
 
 }
