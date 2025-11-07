@@ -2,20 +2,13 @@ public abstract class User{
     private String userID;
     private String name;
     private String password= "password";
-    private FilterOptions savedFilterOptions;
 
-    //
+   
     public User(String userID,String name){
-        this.userID=userID;
-        this.name=name;
+        this.userID = userID;
+        this.name = name;
     }
-    public FilterOptions getSavedFilterOptions(){
-        return savedFilterOptions;
-    }
-    public void setSavedFilterOptions(FilterOptions savedFilterOptions){
-        this.savedFilterOptions = savedFilterOptions;
-    }
-    //
+    
     public String getUserID(){
         return userID;
     }
@@ -37,3 +30,4 @@ public abstract class User{
     }
     public abstract void displayRole();
 }
+
