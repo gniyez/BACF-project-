@@ -17,8 +17,8 @@ public class Application{
         return internship;
     }
     public String generateApplicationID(){
-        return "APP-" + java.util.UUID.randomUUID().toString();    
-    }
+    	 return "APP-" + System.currentTimeMillis() + "-" + student.getUserID().substring(1, 5); // Use part of student ID
+      }
 
     public String getApplicationID(){
         return applicationID;
@@ -34,5 +34,12 @@ public class Application{
     public void setStatus(String status){
         this.status = status;
     }
+    
+    public boolean isPending() {
+        return "PENDING".equals(status);
+    }
 
+    public boolean isSuccessful() {
+        return "SUCCESSFUL".equals(status);
+    }
 }
