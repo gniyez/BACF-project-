@@ -1,27 +1,24 @@
 import java.util.ArrayList;
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
-
-public class CompanyUI implements FilterOptions, LogIn{
+public class CompanyUI implements FilterOptions{
+    private LogInController logInController;
     private InternshipController internshipController;
     private ApplicationController appController;
     private CompanyRepresentative currentUser;
     private Scanner scanner;
-    private List<Internship> internships;
-    private List<Application> applications;
+   
 
-    public CompanyUI(LogInController logInController,ApplicationController appController, InternshipController internshipcontroller CompanyRepresentative currentUser){
-        this.loginController = logInController;
-        this.appController = appController;
-        this.internshipcontroller = internshipcontroller;
-        this.currentUser = currentUser;
-        this.scanner = new Scanner(System.in);
-        this.internships = new ArrayList<>();
-        this.applications = new ArrayList<>();
-    }
+    public CompanyUI(LogInController logInController, ApplicationController appController, 
+            InternshipController internshipController) {  
+		this.logInController = logInController;
+		this.appController = appController;
+		this.internshipController = internshipController;
+		this.scanner = new Scanner(System.in);
+		this.currentUser = null;  
+	}
 
     public void start(){
         System.out.println("COMPANY REPRESENATIVE LOGIN");
@@ -30,9 +27,20 @@ public class CompanyUI implements FilterOptions, LogIn{
         String userID = scanner.nextLine();
         System.out.println("Enter your Password:");
         String password = scanner.nextLine();
-        logInController.logIn(userID, password);
-       
-        showMainMenu();
+        boolean loginSuccess = logInController.login(userID, password);
+        
+        if (loginSuccess) {
+            User loggedInUser = logInController.getCurrentUser();
+            if (loggedInUser instanceof CompanyRepresentative) {
+                this.currentUser = (CompanyRepresentative) loggedInUser;
+                System.out.println("Welcome, " + currentUser.getName() + "!");
+                showMainMenu();
+            } else {
+                System.out.println("Access denied. Not a student.");
+            }
+        } else {
+            System.out.println("Login failed. Invalid credentials.");
+        }
     }
 
     private void showMainMenu(){
@@ -50,6 +58,7 @@ public class CompanyUI implements FilterOptions, LogIn{
 
             System.out.println("Choose an option (0-6):");
             int choice = scanner.nextInt();
+            scanner.nextLine();
 
             switch(choice){
                 case 1 -> createInternship();
@@ -59,10 +68,10 @@ public class CompanyUI implements FilterOptions, LogIn{
                 case 5 -> toggleVisibility();
                 case 6 -> filterInternships();
                 case 0 -> {
-                    logout();
-                    System.out.prinln("Goodbye!");
-                    return;
-                deafult -> System.out.println("Invalid choice. Please try again.");
+                    logInController.logout();
+                    System.out.println("Goodbye!");
+                    return;}
+                default -> System.out.println("Invalid choice. Please try again.");
             }
         }
     }
@@ -83,6 +92,8 @@ public class CompanyUI implements FilterOptions, LogIn{
             System.out.println("3. Advanced (Year 3-4)");
             System.out.println("Enter choice (1-3):");
             int levelChoice = scanner.nextInt();
+            scanner.nextLine();
+            
             String level = switch(levelChoice){
                 case 1 -> "BASIC";
                 case 2 -> "INTERMEDIATE";
@@ -94,11 +105,11 @@ public class CompanyUI implements FilterOptions, LogIn{
             String preferredMajor = scanner.nextLine();
 
             System.out.println("Enter opening date (YYYY-MM-DD):");
-            Date openDate = Date.valueOf(scanner.nextLine());
+            LocalDate openDate = LocalDate.parse(scanner.nextLine());
 
             System.out.println("Enter closing date (YYYY-MM-DD):");
-            Date closeDate = Date.valueOf(scanner.nextLine());
-
+            LocalDate closeDate = LocalDate.parse(scanner.nextLine());
+            
             System.out.println("Enter number of slots (max 10):");
             int slots = scanner.nextInt();
             slots = Math.min(slots, 10); //enforce max slots
@@ -108,30 +119,39 @@ public class CompanyUI implements FilterOptions, LogIn{
             System.out.println("Internship created successfully!");
            
         } catch (Exception e){
-            System.out.println("Error creating internship: " + e.getMessage());
+            System.out.println("Error creating internship: " + e.getMessage());}
         }
 
-    }
+ 
 
     private void viewApplications(){
         List<Application> all = appController.getApplications(); 
+        boolean any = false;
         for (Application app : all) {
             if (app.getInternship().getCompanyName().equalsIgnoreCase(currentUser.getCompanyName())) {
                 any = true;
                 System.out.println(app.getApplicationID() + " | "
-                        + app.getStudent().getStudentID() + " | "
+                        + app.getStudent().getUserID() + " | "
                         + app.getInternship().getInternshipTitle() + " | "
                         + app.getStatus());
             }
         }
         if (!any) System.out.println("No applications for your internships.");
     }
-    }
 
     private void manageApplications(){
         viewApplications();
         
-        if (applications.isEmpty()) {
+     // Fix: Use appController.getApplications() instead of empty applications list
+        List<Application> companyApplications = new ArrayList<>();
+        for (Application app : appController.getApplications()) {
+            if (app.getInternship().getCompanyName().equalsIgnoreCase(currentUser.getCompanyName())) {
+                companyApplications.add(app);
+            }
+        }
+        
+        if (companyApplications.isEmpty()) { 
+            System.out.println("No applications to manage.");
             return;
         }
 
@@ -139,7 +159,7 @@ public class CompanyUI implements FilterOptions, LogIn{
         String appID = scanner.nextLine();
 
         Application selectedApp = null;
-        for (Application app : appController.getApplications()) {
+        for (Application app : companyApplications) {
             if (app.getApplicationID().equals(appID) && app.getInternship().getCompanyName().equalsIgnoreCase(currentUser.getCompanyName())) {
                 selectedApp = app;
                 break;
@@ -154,6 +174,7 @@ public class CompanyUI implements FilterOptions, LogIn{
         System.out.println("2. Reject Application");
         System.out.print("Choose (1-2): ");
         int choice = scanner.nextInt();
+        scanner.nextLine();
 
         if (choice == 1) appController.approveApplication(currentUser, selectedApp);
         else if (choice == 2) appController.rejectApplication(currentUser, selectedApp);
@@ -167,7 +188,7 @@ public class CompanyUI implements FilterOptions, LogIn{
             if (currentUser.getCompanyName().equalsIgnoreCase(i.getCompanyName())) {
                 any = true;
                 System.out.println(i.getInternshipTitle()
-                        + " | Status: " + i.getStatus()
+                        + " | Status: " + i.getInternshipStatus()
                         + " | Visible: " + i.getVisibility()
                         + " | Level: " + i.getLevel()
                         + " | Slots: " + i.getSlots()
@@ -180,10 +201,6 @@ public class CompanyUI implements FilterOptions, LogIn{
 
     private void toggleVisibility(){
         viewMyInternships();
-
-        if (internships.isEmpty()) {
-            return;
-        }
 
         List<Internship> all = internshipController.getInternships();
         List<Internship> mine = new ArrayList<>();
@@ -213,32 +230,39 @@ public class CompanyUI implements FilterOptions, LogIn{
             System.out.println("Invalid input.");
         }
     }
-    @Overriding 
-    private void filterInternships(){
-        System.out.println("Enter filter criteria :");
-        String critria = scanner.nextLine();
-        System.out.println("Enter filter value :");
-        String value = scanner.nextLine();
-        List<Internship> filteredInternship=InternshipController.filter(critria,value);
-        filtered=filteredInternship.stream()
-                 .filter(internship->Internship.getCompanyName().equalsIgnoreCase(currentUser.getCompanyName()))
-        if (filter.isEmpty()){
-            System.out.println("No internships match the filter criteria.");
-            return;
-        } 
-        System.out.println("filtered internships:");
-        System.out.println("=======================");
-        System.out.println("Title | Status | Visible | Level | Slots | Open Date to Close Date");
-        for (Internship i : filtered){
-                System.out.println(i.getInternshipTitle()
-                        + " | Status: " + i.getStatus()
-                        + " | Visible: " + i.getVisibility()
-                        + " | Level: " + i.getLevel()
-                        + " | Slots: " + i.getSlots()
-                        + " | Open: " + i.getOpenDate() + " to " + i.getCloseDate());
-            }
+    
         
-    }
+    private void filterInternships() {
+    	 System.out.println("Enter filter criteria (status/preferredmajors/internshiplevel/etc):");
+    	    String criteria = scanner.nextLine();
+    	    System.out.println("Enter value to filter by:");
+    	    String value = scanner.nextLine();
+    	    
+   
+    	    List<Internship> companyInternships = new ArrayList<>();
+    	    List<Internship> allInternships = internshipController.getInternships();
+    	    for (Internship internship : allInternships) {
+    	        if (currentUser.getCompanyName().equalsIgnoreCase(internship.getCompanyName())) {
+    	            companyInternships.add(internship);
+    	        }
+    	    }
+    	    
+    	    List<Internship> filtered = this.filter(companyInternships, criteria, value);
+    	    
+    	    // Fix: Display filtered results
+    	    System.out.println("Filtered Internships:");
+    	    if (filtered.isEmpty()) {
+    	        System.out.println("No internships match the filter criteria.");
+    	    } else {
+    	        for (Internship internship : filtered) {
+    	            System.out.println(internship.getInternshipTitle()
+    	                    + " | Status: " + internship.getInternshipStatus()
+    	                    + " | Visible: " + internship.getVisibility()
+    	                    + " | Level: " + internship.getLevel()
+    	                    + " | Company: " + internship.getCompanyName());
+    	        }
+    	    }
+    	}
 }
 
 
