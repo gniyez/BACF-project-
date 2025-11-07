@@ -1,7 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream;
-import java.sql.Date;
 
 public class ApplicationController{
     //create an application list so that can filter later 
@@ -17,7 +15,16 @@ public class ApplicationController{
                    .filter(a -> "PENDING".equals(a.getStatus()))
                    .count();
         if (count>=3){
-            System.out.println("You have reached the maximum number of application");
+            System.out.println("You have reached the maximum number of application.");
+            return;
+        }
+        
+     //prevent duplicate applications
+        boolean alreadyApplied = applications.stream()
+                .anyMatch(a -> a.getStudent().equals(student) && a.getInternship().equals(internship));
+
+        if (alreadyApplied) {
+            System.out.println("You have already applied for this internship.");
             return;
         }
 
@@ -25,9 +32,9 @@ public class ApplicationController{
         if (checkEligibility(student,internship)){
             Application app=new Application(student,internship);
             applications.add(app);
-            System.out.println("Application submitted.Status="+app.getStatus());
+            System.out.println("Application submitted. Status = "+app.getStatus());
         }else{
-            System.out.println("Not eligible for this internship");
+            System.out.println("Not eligible for this internship.");
         }
     }
 
@@ -46,50 +53,60 @@ public class ApplicationController{
     }
     public void viewApplicationStatus(Student student){
         System.out.println("Applications for: "+student.getName());
-        boolean found=false;
+        boolean found = false;
         for (Application app:applications){
-            if(app.getStudent() == student){
+            if(app.getStudent().equals(student)){
                 found=true;
                 System.out.println("--------------");
-                System.out.println("Application ID:"+app.getApplicationID());
-                System.out.println("Internship:"+app.getInternship.getInternshipTitle());
-                System.out.println("Level"+app.getInternship.getLevel());
-                System.out.println("Application status:"+app.getStatus());
+                System.out.println("Application ID: "+app.getApplicationID());
+                System.out.println("Internship: "+app.getInternship().getInternshipTitle());
+                System.out.println("Level: "+app.getInternship().getLevel());
+                System.out.println("Application status: "+app.getStatus());
             }
+        }
+        if (!found) {
+            System.out.println("No applications found.");
         }
     }
 
     public void withdrawApplication(Student student,Application app,Internship internship){
         updateApplicationStatus(app,"WITHDRAWN");
-        internship.setSlots(internship.getSlot()+1);
+        internship.setSlots(internship.getSlots()+1);
         System.out.println("Application withdrawn by "+student.getName());
-        System.out.println("Slots restored .Avaliable slots :"+internship.getSlots());
+        System.out.println("Slots restored. Avaliable slots: "+internship.getSlots());
     }
-    public void acceptPlacement(Student student,Application app){
+    public void acceptPlacement(Student student, Application app){
+    	Internship internship = app.getInternship();
         if (!"SUCCESSFUL".equals(app.getStatus())){
             System.out.println("Cannot accept placement. Application not successful.");
             return;
         }
-        updateApplicationStatus(app,"ACCEPTED");
-        internship.setSlots(internship.getSlots()-1);
+        
+        internship.setSlots(internship.getSlots() - 1);
+        
+        //Mark internships as filled if no slots left
         if (internship.getSlots()==0){
-            internship.setStatus("FILLED");
+            internship.setInternshipStatus("FILLED");
         }
+        
         for (Application otherApp:applications){
-            if (otherApp!= app && otherApp.getStudent()== student){
-                if(!"WITHDRAWN".equals(otherApp.getStatus()) && !"ACCEPTED".equals(otherApp.getStatus())){
-                    updateApplicationStatus(otherApp,"WITHDRAWN");
+            if (otherApp!= app && otherApp.getStudent().equals(student)){
+                if ("PENDING".equals(otherApp.getStatus()) || "SUCCESSFUL".equals(otherApp.getStatus())){
+                    updateApplicationStatus(otherApp, "WITHDRAWN");
+                }
             }
         }
+        System.out.println("Placement accepted for: " + internship.getInternshipTitle());
+        System.out.println("All other applications have been automatically withdrawn.");
     }
 
     public void approveApplication(CompanyRepresentative rep,Application app){
         app.setStatus("SUCCESSFUL");
-        System.out.println(rep.getCompanyName()+"approved application"+app.getApplicationID());
+        System.out.println(rep.getCompanyName()+" approved application "+app.getApplicationID());
     }
     public void rejectApplication(CompanyRepresentative rep,Application app){
         app.setStatus("UNSUCCESSFUL");
-        System.out.println(rep.getCompanyName()+"rejected application"+app.getApplicationID());
+        System.out.println(rep.getCompanyName()+" rejected application "+app.getApplicationID());
 
     }
     public void updateApplicationStatus(Application app,String status){
