@@ -1,20 +1,15 @@
 public class Student extends User{
     private String major;
     private int yearOfStudy;
-    private int maxApps = 3;
-    private String studentID;
+    private final int maxApps = 3;
 
-    public Student(String userID, String name, String major, int yearOfStudy){
-        super(userID, name);
-        this.studentID=studentID;
+    public Student(String studentID, String name, String major, int yearOfStudy){
+        super(studentID, name);
         this.major = major;
         this.yearOfStudy = yearOfStudy;
         
     }
-    public String getStudentID(){
-        return studentID;
-    }
-    
+
     public String getMajor(){
         return major;
     }
@@ -32,6 +27,14 @@ public class Student extends User{
     }
     public int getMaxApps() {
         return maxApps;
+    }
+    
+    public boolean canApplyForLevel(String internshipLevel) {
+        if (yearOfStudy <= 2) {
+            return "BASIC".equalsIgnoreCase(internshipLevel);
+        } else {
+            return true; // Year 3-4 can apply for any level
+        }
     }
 
     public void displayRole(){
