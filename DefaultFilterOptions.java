@@ -1,3 +1,5 @@
+import java.util.List;
+import java.util.stream.Collectors;
 public class DefaultFilterOptions implements FilterOptions{
     private List<Internship> internships;
     public DefaultFilterOptions(List<Internship> internships){
