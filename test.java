@@ -13,15 +13,17 @@ public class test {
             "sample_company_representative_list.csv"
         );
         
+        List<Internship> internships = csvLoader.loadInternshipsFromCSV("sample_internship_list.csv");
+        
         // Create controllers
         LogInController loginController = new LogInController(users);
-        InternshipController internshipController = new InternshipController();
+        InternshipController internshipController = new InternshipController(internships);
         ApplicationController appController = new ApplicationController();
-        CareerServiceController careerController = new CareerServiceController(users, internshipController);
+        CareerServiceController careerController = new CareerServiceController(users, internshipController,appController);
         
         // Create UI instances
         StudentUI studentUI = new StudentUI(internshipController, loginController, appController);
-        CompanyUI companyUI = new CompanyUI(loginController, appController, internshipController);
+        CompanyUI companyUI = new CompanyUI(loginController, appController, internshipController,users);
         CareerUI careerUI = new CareerUI(careerController, internshipController, loginController);
         
         System.out.println("\n=== Internship Placement Management System ===");

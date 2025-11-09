@@ -10,15 +10,37 @@ public class LogInController implements LogIn {
     }
 
     public boolean login(String userID, String password){
-        for(User user:users){
-            if(user.getUserID().equals(userID) && user.getPassword().equals(password)){
-                currentUser=user;
-                System.out.println("Login successful. Welcome, "+user.getName()+"!");
-                return true;
+    	User foundUser = null;
+    	for(User user:users){
+            if(user.getUserID().equals(userID)){
+                foundUser = user;
+                break;
             }
         }
-        System.out.println("Login failed. Invalid userID or password.");
-        return false;
+        
+        if (foundUser == null) {
+            System.out.println("Login failed. Invalid user ID: " + userID);
+            return false;
+        }
+        
+        // User exists, now check password
+        if (foundUser.getPassword().equals(password)){
+            //Check if companyrep account is already approved
+            if (foundUser instanceof CompanyRepresentative) {
+                CompanyRepresentative rep = (CompanyRepresentative) foundUser;
+                if (!rep.isApproved()) {
+                    System.out.println("Login failed. Your company representative account is pending approval from Career Center Staff.");
+                    return false;
+                }
+            }
+            
+            currentUser = foundUser;
+            System.out.println("Login successful. Welcome, "+foundUser.getName()+"!");
+            return true;
+        } else {
+            System.out.println("Login failed. Incorrect password.");
+            return false;
+        }
     }
 
     public void logout(){
@@ -30,18 +52,24 @@ public class LogInController implements LogIn {
         }
     }
 
+    @Override
     public void changePassword(String userID, String oldPassword, String newPassword){
-        for(User user:users){
-            if(user.getUserID().equals(userID) && user.getPassword().equals(oldPassword)){
-                user.setPassword(newPassword);
-                System.out.println("Password changed successfully for user "+user.getName()+".");
-                return;
+        for(User user : users){
+            if(user.getUserID().equals(userID)) {
+                if(user.getPassword().equals(oldPassword)){                 
+                    user.setPassword(newPassword);
+                    System.out.println("Password changed successfully for user " + user.getName() + ".");
+                    return;
+                } else {
+                    System.out.println("Password change failed. Incorrect current password.");
+                    return;
+                }
             }
-        }
-        System.out.println("Password change failed. Invalid userID or old password.");
+        }      
+        System.out.println("Password change failed. User not found: " + userID);
     }
+    
     public User getCurrentUser(){ // Later use to route them to their UI
         return currentUser;
     }
 }
-

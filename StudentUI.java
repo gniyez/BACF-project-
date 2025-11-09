@@ -2,6 +2,7 @@ import java.util.Scanner;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.time.LocalDate;
 
 public class StudentUI implements FilterOptions{
      private ApplicationController appController;
@@ -9,6 +10,9 @@ public class StudentUI implements FilterOptions{
      private LogInController logInController;
      private Scanner scanner;
      private Student currentUser;
+     
+     private String currentFilterCriteria = null;
+     private String currentFilterValue = null;
 
      public StudentUI(InternshipController internshipController, LogInController logInController, ApplicationController appController){
           this.internshipController = internshipController; 
@@ -32,13 +36,10 @@ public class StudentUI implements FilterOptions{
              User loggedInUser = logInController.getCurrentUser();
              if (loggedInUser instanceof Student) {
                  this.currentUser = (Student) loggedInUser;
-                 System.out.println("Welcome, " + currentUser.getName() + "!");
                  showMainMenu();
              } else {
                  System.out.println("Access denied. Not a student.");
              }
-         } else {
-             System.out.println("Login failed. Invalid credentials.");
          }
      }
     
@@ -51,7 +52,8 @@ public class StudentUI implements FilterOptions{
                System.out.println("4. Filter Internships");
                System.out.println("5. Accept Placement");
                System.out.println("6. Withdraw Application");
-               System.out.println("0. Exit");
+               System.out.println("7. Change Password");
+               System.out.println("0. Logout");
                System.out.print("Choose an option: ");
 
                int choice = scanner.nextInt();
@@ -63,9 +65,11 @@ public class StudentUI implements FilterOptions{
                     case 3 -> viewApplicationStatus();
                     case 4 -> filterInternships();
                     case 5 -> acceptPlacement();
-                    case 6 -> withdrawInternship();
+                    case 6 -> requestWithdrawal();
+                    case 7 -> changePassword();
                     case 0 -> {
                          System.out.println("Goodbye!");
+                         logInController.logout();
                          return;
                     }
                     default -> System.out.println("Invalid choice. Please try again.");
@@ -74,24 +78,28 @@ public class StudentUI implements FilterOptions{
     }
 
      private void applyInternship(){
-          List<Internship> list = new ArrayList<>(internshipController.getInternships());
-          list.sort(Comparator.comparing(Internship::getInternshipTitle, String.CASE_INSENSITIVE_ORDER)); 
+    	 List<Internship> eligibleInternships = new ArrayList<>();
+    	    
+    	    for (Internship internship : internshipController.getInternships()) {
+    	        if (isInternshipVisibleToStudent(internship)) {
+    	            eligibleInternships.add(internship);
+    	        }
+    	    }
+          eligibleInternships.sort(Comparator.comparing(Internship::getInternshipTitle, String.CASE_INSENSITIVE_ORDER)); 
           
-          if (list.isEmpty()){
+          if (eligibleInternships.isEmpty()){
               System.out.println("No internships available to apply.");
               return;
           }
           
-          for (int i = 0; i < list.size(); i++) {
-               System.out.println((i+1) + ") " + list.get(i).getInternshipTitle());     
-          }
+          listInternships();
 
          System.out.println("Enter internship number to apply: ");
          int internshipNumber = scanner.nextInt();
          scanner.nextLine();
 
           try{
-               Internship selectedInternship = list.get(internshipNumber - 1);
+               Internship selectedInternship = eligibleInternships.get(internshipNumber - 1);
                System.out.println("Apply for: " + selectedInternship.getInternshipTitle() + " at " + selectedInternship.getCompanyName());
                System.out.print("Confirm application? (Y/N): ");
                String confirm = scanner.nextLine();
@@ -108,19 +116,85 @@ public class StudentUI implements FilterOptions{
      
 
      private void listInternships() {                                 
-        List<Internship> list = new ArrayList<>(internshipController.getInternships());      
-        list.sort(Comparator.comparing(Internship::getInternshipTitle, String.CASE_INSENSITIVE_ORDER)); // [ADDED] default alphabetical
-        if (list.isEmpty()) { System.out.println("No internships available."); return; } // [ADDED]
-        for (int i = 0; i < list.size(); i++) {
-            Internship t = list.get(i);
-            System.out.println((i+1) + ") " + t.getInternshipTitle()
-                + " | Level: " + t.getLevel()
-                + " | Status: " + t.getInternshipStatus()
-                + " | Company: " + t.getCompanyName()
-                + " | Visible: " + t.getVisibility()
-                + " | Slots: " + t.getSlots());
-        }
-    }
+    	 List<Internship> eligibleInternships = new ArrayList<>();
+    	    
+    	 for (Internship internship : internshipController.getInternships()) {
+    	     if (isInternshipVisibleToStudent(internship)) {
+    	         eligibleInternships.add(internship);
+    	     }
+    	 }
+    	    
+    	 if (currentFilterCriteria != null && currentFilterValue != null) {
+             eligibleInternships = this.filter(eligibleInternships, currentFilterCriteria, currentFilterValue);
+         }
+    	 
+        eligibleInternships.sort(Comparator.comparing(Internship::getInternshipTitle, String.CASE_INSENSITIVE_ORDER)); //default alphabetical order
+        displayInternships(eligibleInternships, "AVAILABLE INTERNSHIPS");
+     }
+     
+     private void displayInternships(List<Internship> internships, String title) {
+         if (internships.isEmpty()) { 
+             System.out.println("No internships available."); 
+             if (currentFilterCriteria != null) {
+                 System.out.println("Try changing or clearing your filters.");
+             }
+             return; 
+         }
+         
+         System.out.println("\n=== " + title + " ===");
+         if (currentFilterCriteria != null) {
+             System.out.println("Active Filter: " + currentFilterCriteria + " = " + currentFilterValue);
+         }
+         
+         for (int i = 0; i < internships.size(); i++) {
+             Internship internship = internships.get(i);
+             System.out.println((i+1) + ") " + internship.getInternshipTitle());
+             System.out.println("   Company: " + internship.getCompanyName());
+             System.out.println("   Level: " + internship.getLevel());
+             System.out.println("   Major: " + internship.getPreferredMajor());
+             System.out.println("   Open Date: " + internship.getOpenDate());
+             System.out.println("   Closing Date: " + internship.getCloseDate());
+             System.out.println("   Slots: " + internship.getSlots());
+             System.out.println("   Description: " + internship.getInternshipDescription());
+             System.out.println(); 
+         }
+         System.out.println("===============================");
+     }
+ 
+     private boolean isInternshipVisibleToStudent(Internship internship) {
+    	    // 1. Must be APPROVED by career staff
+    	    if (!"APPROVED".equals(internship.getInternshipStatus())) {
+    	        return false;
+    	    }
+    	    
+    	    // 2. Must be VISIBLE (toggle on)
+    	    if (!internship.getVisibility()) {
+    	        return false;
+    	    }
+    	    
+    	    // 3. Must match student's MAJOR
+    	    if (!internship.getPreferredMajor().equalsIgnoreCase(currentUser.getMajor())) {
+    	        return false;
+    	    }
+    	    
+    	    // 4. Must match student's YEAR LEVEL eligibility
+    	    if (!currentUser.canApplyForLevel(internship.getLevel())) {
+    	        return false;
+    	    }
+    	    
+    	    // 5. Must be OPEN for applications (within date range)
+    	    LocalDate today = LocalDate.now();
+    	    if (today.isBefore(internship.getOpenDate()) || today.isAfter(internship.getCloseDate())) {
+    	        return false;
+    	    }
+    	    
+    	    // 6. Must have available slots
+    	    if (internship.getSlots() <= 0) {
+    	        return false;
+    	    }
+    	    
+    	    return true;
+    	}
 
     public void viewApplicationStatus(){
         appController.viewApplicationStatus(currentUser);
@@ -130,7 +204,7 @@ public class StudentUI implements FilterOptions{
     public void acceptPlacement(){
      List<Application> mine = new ArrayList<>();
           for (Application app : appController.getApplications()) {              
-        	  if (app.getStudent() == currentUser && "SUCCESSFUL".equals(app.getStatus())) {
+        	  if (app.getStudent().equals(currentUser) && "SUCCESSFUL".equals(app.getStatus())) {
               mine.add(app);
         	  }
           }
@@ -140,9 +214,10 @@ public class StudentUI implements FilterOptions{
         	  return; 
           }
           
+          
           for (int i = 0; i < mine.size(); i++) {
                Application app = mine.get(i);
-               System.out.println((i+1) + ") " + app.getApplicationID() + " -> " + app.getInternship().getInternshipTitle());
+               System.out.println((i+1) + ") " + app.getApplicationID() + " -> " + app.getInternship().getInternshipTitle() + " (" + app.getInternship().getCompanyName() + ")");
          }
          System.out.print("Choose which offer to accept: ");
          try {
@@ -153,70 +228,95 @@ public class StudentUI implements FilterOptions{
                System.out.println("Invalid input.");
           }
     }
-    public void withdrawInternship(){
-          List<Application> mine = new ArrayList<>();
-          for (Application app : appController.getApplications()) {
-          if (app.getStudent() == currentUser && "PENDING".equals(app.getStatus())) {
-               mine.add(app);
-               }
-          }
-          if (mine.isEmpty()) { System.out.println("No pending applications to withdraw."); return; }
-          for (int i = 0; i < mine.size(); i++) {
-               Application app = mine.get(i);
-               System.out.println((i+1) + ") " + app.getApplicationID() + " -> " + app.getInternship().getInternshipTitle());
-          }
-          System.out.print("Choose which application to withdraw: ");
-          try {
-               int idx = Integer.parseInt(scanner.nextLine().trim()) - 1;
-               if (idx < 0 || idx >= mine.size()) { System.out.println("Invalid index."); return; }
-               Application app = mine.get(idx);
-               appController.withdrawApplication(currentUser, app, app.getInternship());  
-          } catch (Exception e) {
-               System.out.println("Invalid input.");
-          }
+    private void requestWithdrawal(){  
+        List<Application> mine = new ArrayList<>();
+        for (Application app : appController.getApplications()) {
+            if (app.getStudent().equals(currentUser)) {
+                if (!"WITHDRAWN".equals(app.getStatus()) && !app.isWithdrawalRequested()) {
+                    mine.add(app);
+                }
+            }
+        }
+        
+        if (mine.isEmpty()) { 
+            System.out.println("No applications available for withdrawal request."); 
+            return; 
+        }
+        
+        System.out.println("\n=== REQUEST WITHDRAWAL ===");
+        System.out.println("ALL withdrawal requests require approval from Career Center Staff");
+        for (int i = 0; i < mine.size(); i++) {
+            Application app = mine.get(i);
+            System.out.println((i+1) + ") " + app.getApplicationID() + " -> " + 
+                              app.getInternship().getInternshipTitle() + " at " + 
+                              app.getInternship().getCompanyName() + " (" + app.getStatus() + ")");
+        }
+        
+        System.out.print("Choose which application to request withdrawal for: ");
+        try {
+            int idx = Integer.parseInt(scanner.nextLine().trim()) - 1;
+            if (idx < 0 || idx >= mine.size()) { 
+                System.out.println("Invalid selection."); 
+                return; 
+            }
+            Application app = mine.get(idx);
+            appController.requestWithdrawal(currentUser, app);
+        } catch (Exception e) {
+            System.out.println("Invalid input. Please enter a number.");
+        }
     }
     
 
     private void filterInternships() {
         System.out.println("Enter filter criteria (status/preferredmajors/internshiplevel/closingdate/opendate/companyname/visibility):");
+        System.out.println("Or type 'clear' to remove filters");
         String criteria = scanner.nextLine().trim();
+        
+        if ("clear".equalsIgnoreCase(criteria)) {
+            currentFilterCriteria = null;
+            currentFilterValue = null;
+            System.out.println("Filters cleared.");
+            return;
+        }
+        
         System.out.println("Enter value to filter by:");
         String value = scanner.nextLine().trim();
         
-        // Get all internships and filter only visible and approved ones
-        List<Internship> allInternships = internshipController.getInternships();
-        List<Internship> visibleApprovedInternships = new ArrayList<>();
+        // Save filter settings
+        currentFilterCriteria = criteria;
+        currentFilterValue = value;
         
-        for (Internship internship : allInternships) {
-            // Check if internship is visible and approved
-            boolean isVisible = Boolean.TRUE.equals(internship.getVisibility()) || 
-                               "true".equalsIgnoreCase(String.valueOf(internship.getVisibility())) ||
-                               "visible".equalsIgnoreCase(String.valueOf(internship.getVisibility()));
-            
-            boolean isApproved = "APPROVED".equalsIgnoreCase(internship.getInternshipStatus());
-            
-            if (isVisible && isApproved) {
-                visibleApprovedInternships.add(internship);
-            }
+        System.out.println("Filter applied: " + criteria + " = " + value);
+        System.out.println("Filter settings saved. Use 'View Internships' to see filtered results.");
+    
+    }
+    
+    private void changePassword() {
+        System.out.println("\n=== CHANGE PASSWORD ===");
+        
+        System.out.print("Enter current password: ");
+        String currentPassword = scanner.nextLine();
+        
+        System.out.print("Enter new password: ");
+        String newPassword = scanner.nextLine();
+        
+        System.out.print("Confirm new password: ");
+        String confirmPassword = scanner.nextLine();
+        
+
+        if (!newPassword.equals(confirmPassword)) {
+            System.out.println("Error: New passwords do not match.");
+            return;
         }
         
-        // Use the default filter method from FilterOptions interface WITH parameters
-        List<Internship> filtered = this.filter(visibleApprovedInternships, criteria, value);
-        
-        if (filtered.isEmpty()) {
-            System.out.println("No internships match the filter criteria.");
-        } else {
-            System.out.println("Filtered Internships:");
-            for (int i = 0; i < filtered.size(); i++) {
-                Internship internship = filtered.get(i);
-                System.out.println((i + 1) + ") " + internship.getInternshipTitle()
-                    + " | Company: " + internship.getCompanyName()
-                    + " | Level: " + internship.getLevel()
-                    + " | Closing Date: " + internship.getCloseDate()
-                    + " | Slots: " + internship.getSlots()
-                    + " | Major: " + internship.getPreferredMajor());
-            }
+        if (newPassword.isEmpty()) {
+            System.out.println("Error: New password cannot be empty.");
+            return;
         }
+        
+       
+        String currentUserID = currentUser.getUserID();
+        logInController.changePassword(currentUserID, currentPassword, newPassword);
+        System.out.println("Returning to main menu...");
     }
 }
-

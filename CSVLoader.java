@@ -3,6 +3,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDate;
 
 public class CSVLoader {
     
@@ -190,5 +191,66 @@ public class CSVLoader {
             System.out.println("Company representatives file not found or inaccessible: " + filename);
             System.out.println("Starting with empty company representatives list.");
         }
+    }
+    
+    public List<Internship> loadInternshipsFromCSV(String filename) {
+        List<Internship> internships = new ArrayList<>();
+        
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+            String line;
+            boolean isFirstLine = true;
+            int loadedCount = 0;
+            
+            while ((line = br.readLine()) != null) {
+                // Skip header line
+                if (isFirstLine) {
+                    isFirstLine = false;
+                    continue;
+                }
+                
+                // Skip empty lines
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+                
+                // Split by COMMA
+                String[] data = line.split(",");
+                
+                if (data.length >= 10) {
+                    try {
+                        String title = data[0].trim();
+                        String description = data[1].trim();
+                        String level = data[2].trim();
+                        String preferredMajor = data[3].trim();
+                        String status = data[4].trim();
+                        LocalDate openDate = LocalDate.parse(data[5].trim());
+                        LocalDate closeDate = LocalDate.parse(data[6].trim());
+                        String companyName = data[7].trim();
+                        int slots = Integer.parseInt(data[8].trim());
+                        boolean visibility = Boolean.parseBoolean(data[9].trim());
+                        
+                        Internship internship = new Internship(
+                            title, description, level, preferredMajor, status,
+                            openDate, closeDate, companyName, slots
+                        );
+                        internship.setVisibility(visibility);
+                        
+                        internships.add(internship);
+                        loadedCount++;
+                        
+                    } catch (Exception e) {
+                        System.out.println("Error parsing internship data: " + line + " - " + e.getMessage());
+                    }
+                } else {
+                    System.out.println("Invalid internship data format: " + line);
+                }
+            }
+            System.out.println("Successfully loaded " + loadedCount + " internships");
+            
+        } catch (IOException e) {
+            System.out.println("Internship file not found: " + filename);
+        }
+        
+        return internships;
     }
 }

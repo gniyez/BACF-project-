@@ -41,27 +41,35 @@ public class ApplicationController{
     public boolean checkEligibility(Student student ,Internship internship){
         int year=student.getYearOfStudy();
         String level=internship.getLevel();
-         if (year <= 2) {
+        
+        if (year <= 2) {
             return level.equalsIgnoreCase("BASIC");
-        } else if (year >= 3) {
+        } else {
             return level.equalsIgnoreCase("BASIC") || 
                    level.equalsIgnoreCase("INTERMEDIATE") || 
                    level.equalsIgnoreCase("ADVANCED");
-        } else {
-            return false;
         }      
     }
+    
     public void viewApplicationStatus(Student student){
         System.out.println("Applications for: "+student.getName());
         boolean found = false;
         for (Application app:applications){
             if(app.getStudent().equals(student)){
                 found=true;
+                Internship internship = app.getInternship();
+                System.out.println("Application ID: " + app.getApplicationID());
+                System.out.println("Status: " + app.getStatus());
+                System.out.println("Internship: " + internship.getInternshipTitle());
+                System.out.println("Company: " + internship.getCompanyName());
+                System.out.println("Level: " + internship.getLevel());
+                System.out.println("Open Date: " + internship.getOpenDate());
+                System.out.println("Closing Date: " + internship.getCloseDate());
+                System.out.println("Description: " + internship.getInternshipDescription());
+                if (app.isWithdrawalRequested()) {
+                    System.out.println("Withdrawal Request: PENDING APPROVAL");
+                }
                 System.out.println("--------------");
-                System.out.println("Application ID: "+app.getApplicationID());
-                System.out.println("Internship: "+app.getInternship().getInternshipTitle());
-                System.out.println("Level: "+app.getInternship().getLevel());
-                System.out.println("Application status: "+app.getStatus());
             }
         }
         if (!found) {
@@ -69,12 +77,37 @@ public class ApplicationController{
         }
     }
 
-    public void withdrawApplication(Student student,Application app,Internship internship){
-        updateApplicationStatus(app,"WITHDRAWN");
-        internship.setSlots(internship.getSlots()+1);
-        System.out.println("Application withdrawn by "+student.getName());
-        System.out.println("Slots restored. Avaliable slots: "+internship.getSlots());
+    public void requestWithdrawal(Student student, Application app) {
+        if ("WITHDRAWN".equals(app.getStatus())) {
+            System.out.println("Application is already withdrawn.");
+            return;
+        }
+        
+        if (app.isWithdrawalRequested()) {
+            System.out.println("Withdrawal request is already pending approval.");
+            return;
+        }
+        
+        app.setWithdrawalRequested(true);
+        System.out.println("Withdrawal request submitted for: " + app.getInternship().getInternshipTitle());
+        System.out.println("Waiting for approval from Career Center Staff.");
+        System.out.println("Current application status: " + app.getStatus());
     }
+  
+    public void processApprovedWithdrawal(Application app) {
+        String oldStatus = app.getStatus();
+        app.setStatus("WITHDRAWN");
+        app.setWithdrawalRequested(false); 
+        
+        // Restore slots if the application was SUCCESSFUL or ACCEPTED
+        if ("SUCCESSFUL".equals(oldStatus) || "ACCEPTED".equals(oldStatus)) {
+            Internship internship = app.getInternship();
+            internship.setSlots(internship.getSlots() + 1);
+            System.out.println("Slots restored. Available slots: " + internship.getSlots());
+        }
+    }
+    
+    
     public void acceptPlacement(Student student, Application app){
     	Internship internship = app.getInternship();
         if (!"SUCCESSFUL".equals(app.getStatus())){
@@ -96,6 +129,8 @@ public class ApplicationController{
                 }
             }
         }
+        updateApplicationStatus(app, "ACCEPTED");
+        
         System.out.println("Placement accepted for: " + internship.getInternshipTitle());
         System.out.println("All other applications have been automatically withdrawn.");
     }
@@ -111,8 +146,8 @@ public class ApplicationController{
     }
     public void updateApplicationStatus(Application app,String status){
         app.setStatus(status);
-        System.out.println("Application status updated to "+status);
     }
 
 
 }
+

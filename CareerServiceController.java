@@ -1,13 +1,16 @@
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 public class CareerServiceController implements FilterOptions{
     private List<User> users;
     private InternshipController internshipController;
+    private ApplicationController appController;
 
-    public CareerServiceController(List<User> users, InternshipController internshipController) {
+    public CareerServiceController(List<User> users, InternshipController internshipController, ApplicationController appController) {
         this.users = users;
         this.internshipController = internshipController;
+        this.appController = appController;
     }
     
     public List<User> getUsers() {
@@ -60,16 +63,40 @@ public class CareerServiceController implements FilterOptions{
         return false;
 
     }
-    public boolean approveWithdrawal(String staffID, Application app){
+    public boolean approveWithdrawal(String staffID, Application app) {
         if (!isStaff(staffID)) return false;
-        app.setStatus("WITHDRAWN");
-        System.out.println("Withdrawal request approved for application ID: " + app.getApplicationID());
+        
+        if (!app.isWithdrawalRequested()) {
+            System.out.println("No pending withdrawal request for this application.");
+            return false;
+        }
+        
+        appController.processApprovedWithdrawal(app);
+        System.out.println("Withdrawal approved for application: " + app.getApplicationID());
         return true;
     }
-    public boolean rejectWithdrawal(String staffID, Application app){
+
+    public boolean rejectWithdrawal(String staffID, Application app) {
         if (!isStaff(staffID)) return false;
-        System.out.println("Withdrawal request rejected for application ID: " + app.getApplicationID());
+        
+        if (!app.isWithdrawalRequested()) {
+            System.out.println("No pending withdrawal request for this application.");
+            return false;
+        }
+        
+        app.setWithdrawalRequested(false); // 
+        System.out.println("Withdrawal rejected for application: " + app.getApplicationID());
         return true;
+    }
+
+    public List<Application> getPendingWithdrawalRequests() {
+        List<Application> pendingRequests = new ArrayList<>();
+        for (Application app : appController.getApplications()) {
+            if (app.isWithdrawalRequested()) {
+                pendingRequests.add(app);
+            }
+        }
+        return pendingRequests;
     }
     public boolean approveInternship(String staffID, Internship internship) {
         if (!isStaff(staffID)) return false;
@@ -120,18 +147,20 @@ public class CareerServiceController implements FilterOptions{
             System.out.println("No internships found matching the specified criteria.");
             return;
         }
-        for (Internship internship : filtered) {
-            System.out.println("\nTitle: " + internship.getInternshipTitle());
+        for (int i = 0; i < filtered.size(); i++) {
+            Internship internship = filtered.get(i);
+            System.out.println((i+1) + ") " + internship.getInternshipTitle());
             System.out.println("Company: " + internship.getCompanyName());
-            System.out.println("Status: " + internship.getInternshipStatus());
             System.out.println("Level: " + internship.getLevel());
-            System.out.println("Preferred Major: " + internship.getPreferredMajor());
+            System.out.println("Major: " + internship.getPreferredMajor());
             System.out.println("Open Date: " + internship.getOpenDate());
-            System.out.println("Close Date: " + internship.getCloseDate());
+            System.out.println("Closing Date: " + internship.getCloseDate());
             System.out.println("Slots: " + internship.getSlots());
-            System.out.println("Visible to Students: " + internship.getVisibility());
+            System.out.println("Status: " + internship.getInternshipStatus());
+            System.out.println("Visible: " + internship.getVisibility());
+            System.out.println("Description: " + internship.getInternshipDescription());
+            System.out.println(); 
         }
         System.out.println("=== End of Report ===");
     }
 }
-

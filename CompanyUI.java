@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Comparator;
 
 public class CompanyUI implements FilterOptions{
     private LogInController logInController;
@@ -9,67 +10,134 @@ public class CompanyUI implements FilterOptions{
     private ApplicationController appController;
     private CompanyRepresentative currentUser;
     private Scanner scanner;
-   
-
+    private List<User> users; 
+    
+    private String currentFilterCriteria = null;
+    private String currentFilterValue = null;
+    
+    
     public CompanyUI(LogInController logInController, ApplicationController appController, 
-            InternshipController internshipController) {  
-		this.logInController = logInController;
-		this.appController = appController;
-		this.internshipController = internshipController;
-		this.scanner = new Scanner(System.in);
-		this.currentUser = null;  
-	}
+            InternshipController internshipController, List<User> users) {  // ✅ Add users parameter
+        this.logInController = logInController;
+        this.appController = appController;
+        this.internshipController = internshipController;
+        this.scanner = new Scanner(System.in);
+        this.currentUser = null;
+        this.users = users;
+    }
 
     public void start(){
-        System.out.println("COMPANY REPRESENATIVE LOGIN");
-        System.out.println("═".repeat(30));
-        System.out.println("Enter your User ID:");
+        while (true) {
+            System.out.println("\n=== COMPANY REPRESENTATIVE PORTAL ===");
+            System.out.println("1. Login");
+            System.out.println("2. Register New Account");
+            System.out.println("0. Back to Main Menu");
+            System.out.print("Choose an option: ");
+            
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+            
+            switch (choice) {
+                case 1 -> login();
+                case 2 -> register();
+                case 0 -> { 
+                    System.out.println("Returning to main menu...");
+                    return; 
+                }
+                default -> System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+
+    private void login(){
+        System.out.println("\n=== COMPANY REPRESENTATIVE LOGIN ===");
+        System.out.println("Enter your User ID (email):");
         String userID = scanner.nextLine();
         System.out.println("Enter your Password:");
         String password = scanner.nextLine();
+        
         boolean loginSuccess = logInController.login(userID, password);
         
         if (loginSuccess) {
             User loggedInUser = logInController.getCurrentUser();
             if (loggedInUser instanceof CompanyRepresentative) {
                 this.currentUser = (CompanyRepresentative) loggedInUser;
-                System.out.println("Welcome, " + currentUser.getName() + "!");
                 showMainMenu();
             } else {
-                System.out.println("Access denied. Not a student.");
+                System.out.println("Access denied. Not a company representative.");
             }
-        } else {
-            System.out.println("Login failed. Invalid credentials.");
         }
+    }
+
+    private void register(){
+        System.out.println("\n=== COMPANY REPRESENTATIVE REGISTRATION ===");
+        
+        System.out.print("Enter your email: ");
+        String email = scanner.nextLine();
+        
+        // Check if email already exists
+        for (User user : users) {
+            if (user.getUserID().equals(email)) {
+                System.out.println("Error: A representative with this email already exists.");
+                return;
+            }
+        }
+        
+        System.out.print("Enter your name: ");
+        String name = scanner.nextLine();
+        
+        System.out.print("Enter company name: ");
+        String companyName = scanner.nextLine();
+        
+        System.out.print("Enter department: ");
+        String department = scanner.nextLine();
+        
+        System.out.print("Enter position: ");
+        String position = scanner.nextLine();
+        
+        // Create and register the new representative
+        CompanyRepresentative rep = new CompanyRepresentative(email, name, companyName, department, position);
+        users.add(rep); 
+        
+        System.out.println("Registration successful!");
+        System.out.println("Please wait for approval from Career Center Staff before logging in.");
+
     }
 
     private void showMainMenu(){
         while (true){
             System.out.println("COMPANY REPRESENTATIVE MENU");
             System.out.println("═".repeat(50));
-            System.out.println("1.  Create New Internship");
-            System.out.println("2.  View Applications");
-            System.out.println("3.  Approve/Reject Applications");
-            System.out.println("4.  View My Internships");
-            System.out.println("5.  Toggle Internship Visibility");
-            System.out.println("6.  Filter Applications");
-            System.out.println("0.  Exit");
+            System.out.println("1. Create New Internship");
+            System.out.println("2. View Applications");
+            System.out.println("3. Edit Internship");          
+            System.out.println("4. Delete Internship"); 
+            System.out.println("5. Approve/Reject Applications");
+            System.out.println("6. View My Internships");
+            System.out.println("7. Toggle Internship Visibility");
+            System.out.println("8. Filter Applications");
+            System.out.println("9. Change Password");
+            System.out.println("0. Logout");
             System.out.println("═".repeat(50));
+            
+            System.out.print("Choose an option: ");
 
-            System.out.println("Choose an option (0-6):");
             int choice = scanner.nextInt();
             scanner.nextLine();
 
             switch(choice){
                 case 1 -> createInternship();
                 case 2 -> viewApplications();
-                case 3 -> manageApplications();
-                case 4 -> viewMyInternships();
-                case 5 -> toggleVisibility();
-                case 6 -> filterInternships();
+                case 3 -> editInternship();     
+                case 4 -> deleteInternship();
+                case 5 -> manageApplications();
+                case 6 -> viewMyInternships();
+                case 7 -> toggleVisibility();
+                case 8 -> filterInternships();
+                case 9 -> changePassword();
                 case 0 -> {
-                    logInController.logout();
                     System.out.println("Goodbye!");
+                    logInController.logout();
                     return;}
                 default -> System.out.println("Invalid choice. Please try again.");
             }
@@ -139,10 +207,131 @@ public class CompanyUI implements FilterOptions{
         if (!any) System.out.println("No applications for your internships.");
     }
 
+    private void editInternship() {
+        List<Internship> myInternships = getMyInternships();
+        
+        if (myInternships.isEmpty()) {
+            System.out.println("No internships to edit.");
+            return;
+        }
+        
+        System.out.println("\n=== EDIT INTERNSHIP ===");
+        System.out.println("Your Internships:");
+        for (int i = 0; i < myInternships.size(); i++) {
+            Internship intern = myInternships.get(i);
+            String editable = "PENDING".equals(intern.getInternshipStatus()) ? "EDITABLE" : "APPROVED";
+            System.out.println((i+1) + ") " + intern.getInternshipTitle() + 
+                              " | Status: " + intern.getInternshipStatus() + " | " + editable);
+        }
+        
+        System.out.print("Choose internship to edit: ");
+        try {
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+            
+            if (choice < 1 || choice > myInternships.size()) {
+                System.out.println("Invalid selection.");
+                return;
+            }
+            
+            Internship selected = myInternships.get(choice - 1);
+            
+            
+            if (!"PENDING".equals(selected.getInternshipStatus())) {
+                System.out.println("Cannot edit internship. Only PENDING internships can be edited.");
+                return;
+            }
+            
+            // Show current values and allow editing
+            System.out.println("\nEditing: " + selected.getInternshipTitle());
+            System.out.println("(Press Enter to keep current value)");
+            
+            System.out.print("Current Title: " + selected.getInternshipTitle() + "\nNew Title: ");
+            String newTitle = scanner.nextLine();
+            if (!newTitle.isEmpty()) selected.setInternshipTitle(newTitle);
+            
+            System.out.print("Current Description: " + selected.getInternshipDescription() + "\nNew Description: ");
+            String newDescription = scanner.nextLine();
+            if (!newDescription.isEmpty()) selected.setInternshipDescription(newDescription);
+            
+            System.out.print("Current Level: " + selected.getLevel() + "\nNew Level: ");
+            String newLevel = scanner.nextLine();
+            if (!newLevel.isEmpty()) selected.setLevel(newLevel.toUpperCase());
+            
+            System.out.print("Current Preferred Major: " + selected.getPreferredMajor() + "\nNew Preferred Major: ");
+            String newMajor = scanner.nextLine();
+            if (!newMajor.isEmpty()) selected.setPreferredMajor(newMajor);
+            
+            System.out.print("Current Slots: " + selected.getSlots() + "\nNew Slots: ");
+            String slotsInput = scanner.nextLine();
+            if (!slotsInput.isEmpty()) {
+                int newSlots = Math.min(Integer.parseInt(slotsInput), 10);
+                selected.setSlots(newSlots);
+            }
+            
+            System.out.println("Internship updated successfully!");
+            
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private void deleteInternship() {
+        List<Internship> myInternships = getMyInternships();
+        
+        if (myInternships.isEmpty()) {
+            System.out.println("No internships to delete.");
+            return;
+        }
+        
+        System.out.println("\n=== DELETE INTERNSHIP ===");
+        for (int i = 0; i < myInternships.size(); i++) {
+            Internship intern = myInternships.get(i);
+            System.out.println((i+1) + ") " + intern.getInternshipTitle() + 
+                              " | Status: " + intern.getInternshipStatus() + " | ");
+        }
+        
+        System.out.print("Choose internship to delete: ");
+        try {
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+            
+            if (choice < 1 || choice > myInternships.size()) {
+                System.out.println("Invalid selection.");
+                return;
+            }
+            
+            Internship selected = myInternships.get(choice - 1);
+            
+            System.out.print("Are you sure you want to delete '" + selected.getInternshipTitle() + "'? (Y/N): ");
+            String confirm = scanner.nextLine();
+            
+            if (confirm.equalsIgnoreCase("Y")) {
+                internshipController.getInternships().remove(selected);
+                System.out.println("Internship deleted successfully!");
+            } else {
+                System.out.println("Deletion cancelled.");
+            }
+            
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+
+    private List<Internship> getMyInternships() {
+        List<Internship> myInternships = new ArrayList<>();
+        for (Internship internship : internshipController.getInternships()) {
+            if (currentUser.getCompanyName().equalsIgnoreCase(internship.getCompanyName())) {
+                myInternships.add(internship);
+            }
+        }
+        return myInternships;
+    }
+    
     private void manageApplications(){
         viewApplications();
         
-     // Fix: Use appController.getApplications() instead of empty applications list
         List<Application> companyApplications = new ArrayList<>();
         for (Application app : appController.getApplications()) {
             if (app.getInternship().getCompanyName().equalsIgnoreCase(currentUser.getCompanyName())) {
@@ -182,22 +371,49 @@ public class CompanyUI implements FilterOptions{
     }
 
     private void viewMyInternships(){ 
-        List<Internship> all = internshipController.getInternships();      
-        boolean any = false;
-        for (Internship i : all) {
-            if (currentUser.getCompanyName().equalsIgnoreCase(i.getCompanyName())) {
-                any = true;
-                System.out.println(i.getInternshipTitle()
-                        + " | Status: " + i.getInternshipStatus()
-                        + " | Visible: " + i.getVisibility()
-                        + " | Level: " + i.getLevel()
-                        + " | Slots: " + i.getSlots()
-                        + " | Open: " + i.getOpenDate() + " to " + i.getCloseDate());
-            }
+    	List<Internship> myInternships = getMyInternships();
+        
+        // Apply saved filters
+        if (currentFilterCriteria != null && currentFilterValue != null) {
+            myInternships = this.filter(myInternships, currentFilterCriteria, currentFilterValue);
         }
-        if (!any) System.out.println("No internships yet.");
+        
+        // Sort alphabetically
+        myInternships.sort(Comparator.comparing(Internship::getInternshipTitle, String.CASE_INSENSITIVE_ORDER));
+        
+        displayCompanyInternships(myInternships, "MY INTERNSHIPS");
     }
-
+    
+    private void displayCompanyInternships(List<Internship> internships, String title) {
+        if (internships.isEmpty()) {
+            System.out.println("No internships found.");
+            if (currentFilterCriteria != null) {
+                System.out.println("Try changing or clearing your filters.");
+            }
+            return;
+        }
+        
+        System.out.println("\n=== " + title + " ===");
+        if (currentFilterCriteria != null) {
+            System.out.println("Active Filter: " + currentFilterCriteria + " = " + currentFilterValue);
+        }
+        
+        for (int i = 0; i < internships.size(); i++) {
+            Internship internship = internships.get(i);
+            System.out.println((i+1) + ") " + internship.getInternshipTitle());
+            System.out.println("   Company: " + internship.getCompanyName());
+            System.out.println("   Level: " + internship.getLevel());
+            System.out.println("   Major: " + internship.getPreferredMajor());
+            System.out.println("   Open Date: " + internship.getOpenDate());
+            System.out.println("   Closing Date: " + internship.getCloseDate());
+            System.out.println("   Slots: " + internship.getSlots());
+            System.out.println("   Status: " + internship.getInternshipStatus());
+            System.out.println("   Visible: " + internship.getVisibility());
+            System.out.println("   Description: " + internship.getInternshipDescription());
+            System.out.println(); 
+        }
+        System.out.println("=======================");
+    }
 
     private void toggleVisibility(){
         viewMyInternships();
@@ -233,36 +449,55 @@ public class CompanyUI implements FilterOptions{
     
         
     private void filterInternships() {
-    	 System.out.println("Enter filter criteria (status/preferredmajors/internshiplevel/etc):");
-    	    String criteria = scanner.nextLine();
-    	    System.out.println("Enter value to filter by:");
-    	    String value = scanner.nextLine();
-    	    
-   
-    	    List<Internship> companyInternships = new ArrayList<>();
-    	    List<Internship> allInternships = internshipController.getInternships();
-    	    for (Internship internship : allInternships) {
-    	        if (currentUser.getCompanyName().equalsIgnoreCase(internship.getCompanyName())) {
-    	            companyInternships.add(internship);
-    	        }
-    	    }
-    	    
-    	    List<Internship> filtered = this.filter(companyInternships, criteria, value);
-    	    
-    	    // Fix: Display filtered results
-    	    System.out.println("Filtered Internships:");
-    	    if (filtered.isEmpty()) {
-    	        System.out.println("No internships match the filter criteria.");
-    	    } else {
-    	        for (Internship internship : filtered) {
-    	            System.out.println(internship.getInternshipTitle()
-    	                    + " | Status: " + internship.getInternshipStatus()
-    	                    + " | Visible: " + internship.getVisibility()
-    	                    + " | Level: " + internship.getLevel()
-    	                    + " | Company: " + internship.getCompanyName());
-    	        }
-    	    }
-    	}
-}
+        System.out.println("Enter filter criteria (status/preferredmajors/internshiplevel/closingdate/opendate/companyname/visibility):");
+        System.out.println("Or type 'clear' to remove filters");
+        String criteria = scanner.nextLine();
+        
+        if ("clear".equalsIgnoreCase(criteria)) {
+            currentFilterCriteria = null;
+            currentFilterValue = null;
+            System.out.println("Filters cleared.");
+            return;
+        }
+        
+        System.out.println("Enter value to filter by:");
+        String value = scanner.nextLine();
+        
+        // Save filter settings
+        currentFilterCriteria = criteria;
+        currentFilterValue = value;
+        
+        System.out.println("Filter applied: " + criteria + " = " + value);
+        System.out.println("Filter settings saved. Use 'View My Internships' to see filtered results.");
+    }
+    
+    private void changePassword() {
+        System.out.println("\n=== CHANGE PASSWORD ===");
+        
+        System.out.print("Enter current password: ");
+        String currentPassword = scanner.nextLine();
+        
+        System.out.print("Enter new password: ");
+        String newPassword = scanner.nextLine();
+        
+        System.out.print("Confirm new password: ");
+        String confirmPassword = scanner.nextLine();
+        
 
+        if (!newPassword.equals(confirmPassword)) {
+            System.out.println("Error: New passwords do not match.");
+            return;
+        }
+        
+        if (newPassword.isEmpty()) {
+            System.out.println("Error: New password cannot be empty.");
+            return;
+        }
+        
+       
+        String currentUserID = currentUser.getUserID();
+        logInController.changePassword(currentUserID, currentPassword, newPassword);
+        System.out.println("Returning to main menu...");
+    }
+}
 
