@@ -500,4 +500,3 @@ public class CompanyUI implements FilterOptions{
         System.out.println("Returning to main menu...");
     }
 }
-
