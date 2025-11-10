@@ -1,5 +1,5 @@
 Title,Description,Level,PreferredMajor,Status,OpenDate,CloseDate,CompanyName,Slots,Visibility
-Software Engineering Intern,Develop web applications using Java and Spring Boot,INTERMEDIATE,Computer Science,APPROVED,2025-01-15,2026-03-15,Google Singapore,5,TRUE
+Software Engineering Intern,Develop web applications using Java and Spring Boot,ADVANCED,Computer Science,APPROVED,2025-01-15,2026-03-15,Google Singapore,5,TRUE
 Data Analyst Intern,Analyze business data and create visualization dashboards,BASIC,Data Science & AI,APPROVED,2025-02-01,2026-04-30,Meta Singapore,3,TRUE
 Frontend Developer Intern,Build responsive user interfaces with React.js,INTERMEDIATE,Computer Science,PENDING,2025-01-20,2026-03-31,Shopee Singapore,4,FALSE
 Cybersecurity Intern,Monitor network security and conduct vulnerability assessments,ADVANCED,Computer Engineering,APPROVED,2025-02-15,2026-05-15,DBS Bank,2,TRUE
@@ -7,9 +7,9 @@ Mobile App Developer Intern,Develop iOS/Android applications using Flutter,INTER
 Embedded Systems Intern,Work on IoT devices and embedded software development,ADVANCED,Computer Engineering,REJECTED,2025-02-01,2026-04-30,TikTok Singapore,2,FALSE
 UX/UI Design Intern,Design user interfaces and conduct user research,BASIC,Information Engineering & Media,APPROVED,2025-01-25,2026-04-20,Lazada Singapore,3,TRUE
 Backend Developer Intern,Develop REST APIs and database management systems,INTERMEDIATE,Computer Science,APPROVED,2025-02-10,2026-05-31,OCBC,4,TRUE
-Cloud Engineering Intern,Work on AWS/Azure cloud infrastructure and deployment,BASIC,Computer Science,PENDING,2025-01-30,2026-04-15,Standard Chartered Bank,3,FALSE
+Cloud Engineering Intern,Work on AWS/Azure cloud infrastructure and deployment,BASIC,Computer Science,PENDING,2025-01-30,2026-04-15,Standard Chartered Bank,3,TRUE
 AI Research Intern,Research and implement machine learning models,ADVANCED,Data Science & AI,APPROVED,2025-02-05,2026-05-20,Google Singapore,2,TRUE
-Data Analyst Intern,Analyze business data and create visualization dashboards,BASIC,Computer Science,PENDING,2025-11-09,2026-01-01,Google Singapore,6,FALSE
+Data Analyst Intern,Analyze business data and create visualization dashboards,BASIC,Computer Science,PENDING,2025-11-09,2026-01-01,Google Singapore,6,TRUE
 DevOps Engineer Intern,Automate CI/CD pipelines and manage cloud infrastructure,INTERMEDIATE,Computer Science,APPROVED,2025-02-01,2026-04-15,Google Singapore,3,TRUE
 Financial Technology Intern,Develop and test software solutions for digital banking platforms,INTERMEDIATE,Computer Science,APPROVED,2025-01-18,2026-03-20,DBS Bank,4,TRUE
 E-commerce Analytics Intern,Analyze customer behavior and sales data to optimize marketplace performance,BASIC,Data Science & AI,PENDING,2025-02-05,2026-04-25,Lazada Singapore,3,FALSE
@@ -17,4 +17,5 @@ Digital Marketing Intern,Plan and execute data-driven marketing campaigns for di
 Quantitative Analyst Intern,Assist in developing and back-testing algorithmic trading strategies,ADVANCED,Data Science & AI,APPROVED,2025-02-12,2026-05-25,OCBC,2,TRUE
 Product Management Intern,Conduct market research and define product requirements and work with engineering teams,INTERMEDIATE,Computer Science,PENDING,2025-01-28,2026-04-18,Shopee Singapore,2,FALSE
 Game Development Intern,Assist in building game mechanics and features using Unity or Unreal Engine,INTERMEDIATE,Information Engineering & Media,APPROVED,2025-02-08,2026-05-10,TikTok Singapore,3,TRUE
+
 
