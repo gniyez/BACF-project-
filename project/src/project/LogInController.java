@@ -25,7 +25,7 @@ public class LogInController implements LogIn {
             return false;
         }
         
-        // User exists, now check password
+        //User exists, now check password
         if (foundUser.getPassword().equals(password)){
             //Check if companyrep account is already approved
             if (foundUser instanceof CompanyRepresentative) {
@@ -71,7 +71,7 @@ public class LogInController implements LogIn {
         System.out.println("Password change failed. User not found: " + userID);
     }
     
-    public User getCurrentUser(){ // Later use to route them to their UI
+    public User getCurrentUser(){ //Later use to route them to their UI
         return currentUser;
     }
 }

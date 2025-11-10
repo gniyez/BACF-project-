@@ -5,10 +5,10 @@ import java.util.Scanner;
 
 public class test {
     public static void main(String[] args) {
-        // Initialize CSV Loader
+        //Initialize CSV Loader
         CSVLoader csvLoader = new CSVLoader();
         
-        // Load all users from CSV files
+        //Load all users from CSV files
         List<User> users = csvLoader.loadUsersFromCSV(
             "sample_student_list.csv", 
             "sample_staff_list.csv", 
@@ -17,13 +17,13 @@ public class test {
         
         List<Internship> internships = csvLoader.loadInternshipsFromCSV("sample_internship_list.csv");
         
-        // Create controllers
+        //Create controllers
         LogInController loginController = new LogInController(users);
         InternshipController internshipController = new InternshipController(internships);
         ApplicationController appController = new ApplicationController();
         CareerServiceController careerController = new CareerServiceController(users, internshipController,appController);
         
-        // Create UI instances
+        //Create UI instances
         StudentUI studentUI = new StudentUI(internshipController, loginController, appController);
         CompanyUI companyUI = new CompanyUI(loginController, appController, internshipController,users);
         CareerUI careerUI = new CareerUI(careerController, internshipController, loginController);
@@ -33,7 +33,6 @@ public class test {
         System.out.println("Total users: " + users.size());
         System.out.println("Total internships: " + internshipController.getInternships().size());
         
-        // Menu directly in main method
         Scanner scanner = new Scanner(System.in);
         
         while (true) {
@@ -45,7 +44,7 @@ public class test {
             System.out.print("Choose an option: ");
             
             int choice = scanner.nextInt();
-            scanner.nextLine(); // consume newline
+            scanner.nextLine(); 
             
             switch (choice) {
                 case 1 -> studentUI.start();

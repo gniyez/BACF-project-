@@ -151,46 +151,46 @@ public class StudentUI implements FilterOptions{
          for (int i = 0; i < internships.size(); i++) {
              Internship internship = internships.get(i);
              System.out.println((i+1) + ") " + internship.getInternshipTitle());
-             System.out.println("   Company: " + internship.getCompanyName());
-             System.out.println("   Level: " + internship.getLevel());
-             System.out.println("   Major: " + internship.getPreferredMajor());
-             System.out.println("   Open Date: " + internship.getOpenDate());
-             System.out.println("   Closing Date: " + internship.getCloseDate());
-             System.out.println("   Slots: " + internship.getSlots());
-             System.out.println("   Description: " + internship.getInternshipDescription());
+             System.out.println("Company: " + internship.getCompanyName());
+             System.out.println("Level: " + internship.getLevel());
+             System.out.println("Major: " + internship.getPreferredMajor());
+             System.out.println("Open Date: " + internship.getOpenDate());
+             System.out.println("Closing Date: " + internship.getCloseDate());
+             System.out.println("Slots: " + internship.getSlots());
+             System.out.println("Description: " + internship.getInternshipDescription());
              System.out.println(); 
          }
          System.out.println("===============================");
      }
  
      private boolean isInternshipVisibleToStudent(Internship internship) {
-    	    // 1. Must be APPROVED by career staff
+    	    //Must be approved by career staff
     	    if (!"APPROVED".equals(internship.getInternshipStatus())) {
     	        return false;
     	    }
     	    
-    	    // 2. Must be VISIBLE (toggle on)
+    	    //Visibility must be toggled on 
     	    if (!internship.getVisibility()) {
     	        return false;
     	    }
     	    
-    	    // 3. Must match student's MAJOR
+    	    //Preferred major must match student's major
     	    if (!internship.getPreferredMajor().equalsIgnoreCase(currentUser.getMajor())) {
     	        return false;
     	    }
     	    
-    	    // 4. Must match student's YEAR LEVEL eligibility
+    	    //Must match student's year of study to internship level
     	    if (!currentUser.canApplyForLevel(internship.getLevel())) {
     	        return false;
     	    }
     	    
-    	    // 5. Must be OPEN for applications (within date range)
+    	    //Must be within application period
     	    LocalDate today = LocalDate.now();
     	    if (today.isBefore(internship.getOpenDate()) || today.isAfter(internship.getCloseDate())) {
     	        return false;
     	    }
     	    
-    	    // 6. Must have available slots
+    	    //Must have available slots
     	    if (internship.getSlots() <= 0) {
     	        return false;
     	    }
@@ -284,7 +284,7 @@ public class StudentUI implements FilterOptions{
         System.out.println("Enter value to filter by:");
         String value = scanner.nextLine().trim();
         
-        // Save filter settings
+        //Save filter settings
         currentFilterCriteria = criteria;
         currentFilterValue = value;
         

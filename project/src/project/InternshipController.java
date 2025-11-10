@@ -41,7 +41,7 @@ public class InternshipController implements FilterOptions{
     
     public void toggleVisibility(Internship internship) {
       if (internships.contains(internship)) {
-        boolean newValue = !internship.getVisibility();  // flip
+        boolean newValue = !internship.getVisibility();  //flip
         internship.setVisibility(newValue);
 
         System.out.println("Internship '" + internship.getInternshipTitle() +
@@ -49,13 +49,12 @@ public class InternshipController implements FilterOptions{
      }
     }
     
-    // Use the default filter method from FilterOptions interface
+    //Use the default filter method from FilterOptions interface
     public List<Internship> filter(String criteria, String value) {   
-        // Call the default method from the FilterOptions interface
         return this.filter(internships, criteria, value);}
 
     
-    // maybe need to delete this !!!
+    //maybe need to delete this !!!
     public List<Internship> sortInternships(String orderBy){
         return internships.stream().sorted((i1, i2) -> {
             switch (orderBy.toLowerCase()){

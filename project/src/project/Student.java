@@ -35,7 +35,7 @@ public class Student extends User{
         if (yearOfStudy <= 2) {
             return "BASIC".equalsIgnoreCase(internshipLevel);
         } else {
-            return true; // Year 3-4 can apply for any level
+            return true; //Year 3-4 can apply for any level
         }
     }
 

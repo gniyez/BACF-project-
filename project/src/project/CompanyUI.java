@@ -19,7 +19,7 @@ public class CompanyUI implements FilterOptions{
     
     
     public CompanyUI(LogInController logInController, ApplicationController appController, 
-            InternshipController internshipController, List<User> users) {  // ✅ Add users parameter
+            InternshipController internshipController, List<User> users) {  
         this.logInController = logInController;
         this.appController = appController;
         this.internshipController = internshipController;
@@ -77,7 +77,7 @@ public class CompanyUI implements FilterOptions{
         System.out.print("Enter your email: ");
         String email = scanner.nextLine();
         
-        // Check if email already exists
+        //Check if email already exists
         for (User user : users) {
             if (user.getUserID().equals(email)) {
                 System.out.println("Error: A representative with this email already exists.");
@@ -97,7 +97,7 @@ public class CompanyUI implements FilterOptions{
         System.out.print("Enter position: ");
         String position = scanner.nextLine();
         
-        // Create and register the new representative
+        //Create and register the new representative
         CompanyRepresentative rep = new CompanyRepresentative(email, name, companyName, department, position);
         users.add(rep); 
         
@@ -244,7 +244,7 @@ public class CompanyUI implements FilterOptions{
                 return;
             }
             
-            // Show current values and allow editing
+            //Show current values and allow editing
             System.out.println("\nEditing: " + selected.getInternshipTitle());
             System.out.println("(Press Enter to keep current value)");
             
@@ -375,12 +375,12 @@ public class CompanyUI implements FilterOptions{
     private void viewMyInternships(){ 
     	List<Internship> myInternships = getMyInternships();
         
-        // Apply saved filters
+        //Apply saved filters
         if (currentFilterCriteria != null && currentFilterValue != null) {
             myInternships = this.filter(myInternships, currentFilterCriteria, currentFilterValue);
         }
         
-        // Sort alphabetically
+        //Sort alphabetically
         myInternships.sort(Comparator.comparing(Internship::getInternshipTitle, String.CASE_INSENSITIVE_ORDER));
         
         displayCompanyInternships(myInternships, "MY INTERNSHIPS");
@@ -403,15 +403,15 @@ public class CompanyUI implements FilterOptions{
         for (int i = 0; i < internships.size(); i++) {
             Internship internship = internships.get(i);
             System.out.println((i+1) + ") " + internship.getInternshipTitle());
-            System.out.println("   Company: " + internship.getCompanyName());
-            System.out.println("   Level: " + internship.getLevel());
-            System.out.println("   Major: " + internship.getPreferredMajor());
-            System.out.println("   Open Date: " + internship.getOpenDate());
-            System.out.println("   Closing Date: " + internship.getCloseDate());
-            System.out.println("   Slots: " + internship.getSlots());
-            System.out.println("   Status: " + internship.getInternshipStatus());
-            System.out.println("   Visible: " + internship.getVisibility());
-            System.out.println("   Description: " + internship.getInternshipDescription());
+            System.out.println("Company: " + internship.getCompanyName());
+            System.out.println("Level: " + internship.getLevel());
+            System.out.println("Major: " + internship.getPreferredMajor());
+            System.out.println("Open Date: " + internship.getOpenDate());
+            System.out.println("Closing Date: " + internship.getCloseDate());
+            System.out.println("Slots: " + internship.getSlots());
+            System.out.println("Status: " + internship.getInternshipStatus());
+            System.out.println("Visible: " + internship.getVisibility());
+            System.out.println("Description: " + internship.getInternshipDescription());
             System.out.println(); 
         }
         System.out.println("=======================");
@@ -465,7 +465,7 @@ public class CompanyUI implements FilterOptions{
         System.out.println("Enter value to filter by:");
         String value = scanner.nextLine();
         
-        // Save filter settings
+        //Save filter settings
         currentFilterCriteria = criteria;
         currentFilterValue = value;
         

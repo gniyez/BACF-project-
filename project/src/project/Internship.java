@@ -59,8 +59,7 @@ public class Internship {
     
     public boolean isOpenForApplication() {
         LocalDate today = LocalDate.now();
-        return "APPROVED".equals(status) && 
-               !today.isBefore(openDate) && 
+        return "APPROVED".equals(status) && !today.isBefore(openDate) && 
                !today.isAfter(closeDate) &&
                slots > 0;
     }

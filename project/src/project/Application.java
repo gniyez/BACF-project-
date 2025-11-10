@@ -24,7 +24,7 @@ public class Application{
     }
     
     public String generateApplicationID(){
-    	 return "APP-" + System.currentTimeMillis() + "-" + student.getUserID().substring(1, 5); // Use part of student ID
+    	 return "APP-" + System.currentTimeMillis() + "-" + student.getUserID().substring(1, 5); //Use part of student ID
       }
 
     public String getApplicationID(){

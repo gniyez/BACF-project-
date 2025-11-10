@@ -13,13 +13,13 @@ public class CSVLoader {
         List<User> users = new ArrayList<>();
         
         try {
-            // Load students
+            //Load students
             loadStudentsFromCSV(users, studentFile);
             
-            // Load career service staff
+            //Load career service staff
             loadStaffFromCSV(users, staffFile);
             
-            // Load company representatives
+            //Load company representatives
             loadCompanyRepsFromCSV(users, companyFile);
             
             System.out.println("Total users loaded: " + users.size());
@@ -38,18 +38,18 @@ public class CSVLoader {
             int loadedCount = 0;
             
             while ((line = br.readLine()) != null) {
-                // Skip header line
+                //Skip header line
                 if (isFirstLine) {
                     isFirstLine = false;
                     continue;
                 }
                 
-                // Skip empty lines
+                //Skip empty lines
                 if (line.trim().isEmpty()) {
                     continue;
                 }
                 
-                // Split by COMMA (changed from tab)
+                //Split by comma since CSV
                 String[] data = line.split(",");
                 
                 if (data.length >= 5) {
@@ -60,12 +60,12 @@ public class CSVLoader {
                         int year = Integer.parseInt(data[3].trim());
                         String email = data[4].trim();
                         
-                        // Validate student ID format (U + 7 digits + letter)
+                        //Validate student ID format (U + 7 digits + letter)
                         if (!studentID.matches("^U\\d{7}[A-Z]$")) {
                             System.out.println("Warning: Invalid student ID format: " + studentID);
                         }
                         
-                        // Create Student object - using studentID as userID
+                        //Create Student object by using studentID as userID
                         Student student = new Student(studentID, name, major, year);
                         users.add(student);
                         loadedCount++;
@@ -91,18 +91,18 @@ public class CSVLoader {
             int loadedCount = 0;
             
             while ((line = br.readLine()) != null) {
-                // Skip header line
+                //Skip header line
                 if (isFirstLine) {
                     isFirstLine = false;
                     continue;
                 }
                 
-                // Skip empty lines
+                //Skip empty lines
                 if (line.trim().isEmpty()) {
                     continue;
                 }
                 
-                // Split by COMMA (changed from tab)
+                //Split by comma
                 String[] data = line.split(",");
                 
                 if (data.length >= 5) {
@@ -113,7 +113,7 @@ public class CSVLoader {
                         String department = data[3].trim();
                         String email = data[4].trim();
                         
-                        // Create CareerServiceStaff object - using staffID as userID
+                        //Create CareerServiceStaff object by using staffID as userID
                         CareerServiceStaff staff = new CareerServiceStaff(staffID, name, department);
                         users.add(staff);
                         loadedCount++;
@@ -137,18 +137,15 @@ public class CSVLoader {
             int loadedCount = 0;
             
             while ((line = br.readLine()) != null) {
-                // Skip header line
                 if (isFirstLine) {
                     isFirstLine = false;
                     continue;
                 }
-                
-                // Skip empty lines
+            
                 if (line.trim().isEmpty()) {
                     continue;
                 }
-                
-                // Split by COMMA (changed from tab)
+            
                 String[] data = line.split(",");
                 
                 if (data.length >= 7) {
@@ -161,15 +158,14 @@ public class CSVLoader {
                         String email = data[5].trim();
                         String status = data[6].trim();
                         
-                        // Validate email format for company reps
+                        //Validate email format for company reps
                         if (!email.contains("@")) {
                             System.out.println("Warning: Invalid email format for company rep: " + email);
                         }
                         
-                        // Create CompanyRepresentative object - using email as userID
+                        //Create CompanyRepresentative object by using email as userID
                         CompanyRepresentative rep = new CompanyRepresentative(email, name, companyName, department, position);
-                        
-                        // Set status if provided and valid
+                    
                         if (!status.isEmpty() && (status.equals("APPROVED") || status.equals("REJECTED"))) {
                             rep.setStatus(status);
                         } else if (!status.isEmpty() && !status.equals("PENDING")) {
@@ -182,11 +178,11 @@ public class CSVLoader {
                     } catch (Exception e) {
                         System.out.println("Error parsing company rep data: " + line + " - " + e.getMessage());
                     }
-                } else if (data.length > 1) { // If there's some data but not enough columns
+                } else if (data.length > 1) { //If there's some data but not enough columns
                     System.out.println("Invalid company rep data format (expected 7 columns, got " + data.length + "): " + line);
                     System.out.println("Data: " + java.util.Arrays.toString(data));
                 }
-                // If data.length == 1, it's probably just an empty line or header
+                //If data.length == 1, it's probably just an empty line or header
             }
             System.out.println("Successfully loaded " + loadedCount + " company representatives");
         } catch (IOException e) {
@@ -204,18 +200,15 @@ public class CSVLoader {
             int loadedCount = 0;
             
             while ((line = br.readLine()) != null) {
-                // Skip header line
                 if (isFirstLine) {
                     isFirstLine = false;
                     continue;
                 }
                 
-                // Skip empty lines
                 if (line.trim().isEmpty()) {
                     continue;
                 }
-                
-                // Split by COMMA
+            
                 String[] data = line.split(",");
                 
                 if (data.length >= 10) {
