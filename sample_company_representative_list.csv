@@ -1,6 +1,0 @@
-CompanyRepID,Name,CompanyName,Department,Position,Email,Status
-CR001,Alice Wong,Google Singapore,Engineering,Tech Recruiter,alice.wong@google.com,PENDING
-CR002,David Tan,Meta Singapore,HR,Talent Acquisition Specialist,david.tan@meta.com,APPROVED
-CR003,Sarah Lim,Grab,Technology,Campus Recruitment Manager,sarah.lim@grab.com,PENDING
-CR004,Michael Ng,DBS Bank,Technology,Graduate Program Manager,michael.ng@dbs.com,APPROVED
-CR005,Priya Sharma,Shopee Singapore,Engineering,Technical Recruiter,priya.sharma@shopee.com,APPROVED
