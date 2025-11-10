@@ -3,7 +3,7 @@ package project;
 import java.util.List;
 import java.util.Scanner;
 
-public class test {
+public class InternshipManagementSystem{
     public static void main(String[] args) {
         //Initialize CSV Loader
         CSVLoader csvLoader = new CSVLoader();
@@ -45,7 +45,7 @@ public class test {
             
             int choice = scanner.nextInt();
             scanner.nextLine(); 
-            
+
             switch (choice) {
                 case 1 -> studentUI.start();
                 case 2 -> companyUI.start();
