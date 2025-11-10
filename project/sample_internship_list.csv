@@ -1,7 +1,7 @@
 Title,Description,Level,PreferredMajor,Status,OpenDate,CloseDate,CompanyName,Slots,Visibility
 Software Engineering Intern,Develop web applications using Java and Spring Boot,ADVANCED,Computer Science,APPROVED,2025-01-15,2026-03-15,Google Singapore,5,TRUE
 Data Analyst Intern,Analyze business data and create visualization dashboards,BASIC,Data Science & AI,APPROVED,2025-02-01,2026-04-30,Meta Singapore,3,TRUE
-Frontend Developer Intern,Build responsive user interfaces with React.js,INTERMEDIATE,Computer Science,PENDING,2025-01-20,2026-03-31,Shopee Singapore,4,FALSE
+Frontend Developer Intern,Build responsive user interfaces with React.js,INTERMEDIATE,Computer Science,PENDING,2025-01-20,2026-03-31,Shopee Singapore,4,TRUE
 Cybersecurity Intern,Monitor network security and conduct vulnerability assessments,ADVANCED,Computer Engineering,APPROVED,2025-02-15,2026-05-15,DBS Bank,2,TRUE
 Mobile App Developer Intern,Develop iOS/Android applications using Flutter,INTERMEDIATE,Information Engineering & Media,APPROVED,2025-01-10,2026-04-10,Grab,3,TRUE
 Embedded Systems Intern,Work on IoT devices and embedded software development,ADVANCED,Computer Engineering,REJECTED,2025-02-01,2026-04-30,TikTok Singapore,2,FALSE
@@ -17,5 +17,6 @@ Digital Marketing Intern,Plan and execute data-driven marketing campaigns for di
 Quantitative Analyst Intern,Assist in developing and back-testing algorithmic trading strategies,ADVANCED,Data Science & AI,APPROVED,2025-02-12,2026-05-25,OCBC,2,TRUE
 Product Management Intern,Conduct market research and define product requirements and work with engineering teams,INTERMEDIATE,Computer Science,PENDING,2025-01-28,2026-04-18,Shopee Singapore,2,FALSE
 Game Development Intern,Assist in building game mechanics and features using Unity or Unreal Engine,INTERMEDIATE,Information Engineering & Media,APPROVED,2025-02-08,2026-05-10,TikTok Singapore,3,TRUE
+
 
 
