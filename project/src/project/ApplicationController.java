@@ -98,10 +98,10 @@ public class ApplicationController{
   
     public void processApprovedWithdrawal(Application app) {
         String oldStatus = app.getStatus();
-        app.setStatus("WITHDRAWN");
+        updateApplicationStatus(app, "WITHDRAWN");
         app.setWithdrawalRequested(false); 
         
-        // Restore slots if the application was SUCCESSFUL or ACCEPTED
+        //Restore internship slots if withdrawal from SUCCESSFUL or ACCEPTED application is approved 
         if ("SUCCESSFUL".equals(oldStatus) || "ACCEPTED".equals(oldStatus)) {
             Internship internship = app.getInternship();
             internship.setSlots(internship.getSlots() + 1);
@@ -138,11 +138,11 @@ public class ApplicationController{
     }
 
     public void approveApplication(CompanyRepresentative rep,Application app){
-        app.setStatus("SUCCESSFUL");
+        updateApplicationStatus(app, "SUCCESSFUL");
         System.out.println(rep.getCompanyName()+" approved application "+app.getApplicationID());
     }
     public void rejectApplication(CompanyRepresentative rep,Application app){
-        app.setStatus("UNSUCCESSFUL");
+        updateApplicationStatus(app, "UNSUCCESSFUL");
         System.out.println(rep.getCompanyName()+" rejected application "+app.getApplicationID());
 
     }
