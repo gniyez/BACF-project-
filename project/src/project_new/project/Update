@@ -1,0 +1,34 @@
+Encapsulation: StudentUI, companyUi and careerUI mix user interaction 
+with business logic 
+move actions like applying for internships, editing opportunities or filtering in Application controller and internship controller 
+
+Use interfaces and abstract classes for shared operations among various users 
+
+
+Error handling and input validation:
+user menu selection, internship editing, across UI classes, input validation is minimal 
+nll or empty fields in registation or internship creation are less protected 
+add more try catch blocks and ensure all user input is validated 
+
+in CSV loader, parsing errors for file loading are loged but there's no attempt to skip or recover from problematic lines 
+consider continuing loading whil ereporting errors, so entire files aren't lost due to one line 
+
+
+
+data consistency:
+- changes to internships e.g. creation, editing, slot management do not update related applications or system state consistently. ensure all side effects are handled e.g. updating slot counts after withdrawal, accpetance etc.
+- guarantee that unique constraints e.g. max applications, company rep registration are enforced on the controller level, not just UI 
+
+Extensibility 
+- implement enum types for repeated constants e.g. statuses. levels, not free form strings to reduce typos
+- use a base class / utilitty mtd for filtering logic 
+
+documentation 
+- add javadoc comments for all public classes and methods 
+
+
+added enum classes internship level and status
+
+//to add java documentation!
+
+
