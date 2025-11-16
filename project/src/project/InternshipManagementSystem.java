@@ -3,6 +3,12 @@ package project;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Main class to run the Internship Management System.
+ * Initializes controllers, loads data from CSV files, and starts the user interface.
+ * 
+ * @author Carin, Leyi, Pei Shan, Serene, Zhen Ying
+ */
 public class InternshipManagementSystem{
     public static void main(String[] args) {
         //Initialize CSV Loader
