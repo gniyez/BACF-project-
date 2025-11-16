@@ -19,7 +19,12 @@ public class StudentUI implements FilterOptions{
      
      private String currentFilterCriteria = null;
      private String currentFilterValue = null;
-
+/**
+     * Constructs a StudentUI with the required controllers.
+     * @param internshipController Controller to manage internships
+     * @param logInController Controller to manage login
+     * @param appController Controller to manage applications
+     */
      public StudentUI(InternshipController internshipController, LogInController logInController, ApplicationController appController){
           this.internshipController = internshipController; 
           this.logInController = logInController;
@@ -27,7 +32,9 @@ public class StudentUI implements FilterOptions{
           this.scanner = new Scanner(System.in);
           this.currentUser = null;
           }    
-     
+    /**
+     * Starts the Student UI by prompting login.
+     */  
      public void start(){
          System.out.println("STUDENT LOGIN");
          System.out.println("═".repeat(30));
@@ -48,7 +55,9 @@ public class StudentUI implements FilterOptions{
              }
          }
      }
-    
+   /**
+     * Displays the main menu for the student after successful login.
+     */ 
      private void showMainMenu(){
           while (true){
                System.out.println("STUDENT MENU");
