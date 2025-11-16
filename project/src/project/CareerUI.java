@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
-
+/**
+ * CareerUI is the user interface class for Career Service Staff to manage
+ * company representatives, internships, withdrawal requests, and reports.
+ */
 public class CareerUI implements FilterOptions{
     private final CareerServiceController csController;
     private final InternshipController internshipController;
@@ -15,14 +18,21 @@ public class CareerUI implements FilterOptions{
     
     private String currentFilterCriteria = null;
     private String currentFilterValue = null;
-
+/**
+     * Constructs a CareerUI with the required controllers.
+     * @param csController Career service controller
+     * @param internshipController Internship controller
+     * @param logInController Login controller
+     */
     public CareerUI(CareerServiceController csController, InternshipController internshipController, LogInController logInController) {
         this.csController = csController;
         this.internshipController = internshipController;
         this.logInController = logInController;
         this.sc = new Scanner(System.in);
     }
-    
+  /**
+     * Starts the UI by prompting login for career service staff.
+     */  
     public void start(){
         System.out.println("STAFF LOGIN");
         System.out.println("═".repeat(30));
@@ -44,7 +54,9 @@ public class CareerUI implements FilterOptions{
             }
         }
     }
-    
+ /**
+     * Displays the main menu for staff and handles menu selection.
+     */   
     private void showStaffMenu() {
         while (true) {
             System.out.println("\n=== Career Center Staff Menu ===");
@@ -107,7 +119,9 @@ public class CareerUI implements FilterOptions{
             }
         }
     }
-
+ /**
+     * Approves a company representative based on user input.
+     */
     private void approveCompanyFlow() {
         System.out.print("Enter company representative email to approve: ");
         String repID;
@@ -120,7 +134,9 @@ public class CareerUI implements FilterOptions{
         } while (repID.isEmpty());
         csController.approveCompany(currentUser.getUserID(),repID);
     }
-
+/**
+     * Rejects a company representative based on user input.
+     */
     private void rejectCompanyFlow() {
         System.out.print("Enter company representative email to reject: ");
         String repID;
@@ -136,7 +152,9 @@ public class CareerUI implements FilterOptions{
         while(repID.isEmpty());
         csController.rejectCompany(currentUser.getUserID(), repID);
     }
-
+/**
+     * Approves a pending internship selected by the staff.
+     */
     private void approveInternshipFlow() {
     	List<Internship> pendingInternships = new ArrayList<>();
         for (Internship i : internshipController.getInternships()) {
@@ -178,7 +196,9 @@ public class CareerUI implements FilterOptions{
             Internship selectedInternship = pendingInternships.get(choice - 1);
             csController.approveInternship(currentUser.getUserID(), selectedInternship);
     }
-
+ /**
+     * Rejects a pending internship selected by the staff.
+     */
     private void rejectInternshipFlow() {
         List<Internship> pendingInternships = new ArrayList<>();
         for (Internship i : internshipController.getInternships()) {
@@ -218,7 +238,9 @@ public class CareerUI implements FilterOptions{
             Internship selectedInternship = pendingInternships.get(choice - 1);
             csController.rejectInternship(currentUser.getUserID(), selectedInternship);
     }
-    
+  /**
+     * Generates an internship report with optional status, major, and level filters.
+     */  
     private void generateReportFlow() {
         System.out.print("Enter status filter (or leave blank): ");
         String status = sc.nextLine();
@@ -234,7 +256,10 @@ public class CareerUI implements FilterOptions{
 
         csController.generateReport(status, major, level);
     }
-    
+   
+    /**
+     * Lists pending company representatives awaiting approval or rejection.
+     */
     private void listPendingReps(){
         boolean any=false;
         List<User> users = csController.getUsers();
@@ -248,7 +273,9 @@ public class CareerUI implements FilterOptions{
         }
         if (!any) System.out.println("No pending reps.");
     }
-    
+    /**
+     * Lists pending internships awaiting approval or rejection.
+     */
     private void listPendingInternships() {             
         List<Internship> pendingInternships = new ArrayList<>();
         for (Internship internship : internshipController.getInternships()) {
@@ -278,7 +305,9 @@ public class CareerUI implements FilterOptions{
         }
         System.out.println("===========================");
     }
-    
+    /**
+     * Filters internships based on criteria and value provided by staff.
+     */
     private void filterInternships(){
         String criteria;
         do{
@@ -316,7 +345,9 @@ public class CareerUI implements FilterOptions{
         System.out.println("Filter applied: " + criteria + " = " + value);
         System.out.println("Filter settings saved. Use 'View All Internships' to see filtered results.");
     }
-    
+   /**
+     * Manages pending withdrawal requests and allows approval or rejection.
+     */ 
     private void manageWithdrawalRequests() {
         List<Application> pendingRequests = csController.getPendingWithdrawalRequests();
         
@@ -375,7 +406,9 @@ public class CareerUI implements FilterOptions{
             } 
         }   
     
-    
+     /**
+     * Displays all internships with optional filters applied.
+     */
     
     private void viewAllInternships() {
         List<Internship> allInternships = internshipController.getInternships();
@@ -389,7 +422,11 @@ public class CareerUI implements FilterOptions{
         allInternships.sort(Comparator.comparing(Internship::getInternshipTitle, String.CASE_INSENSITIVE_ORDER));
         displayAllInternships(allInternships, "ALL INTERNSHIP OPPORTUNITIES");
     }
-    
+    /**
+     * Helper method to display a list of internships with details.
+     * @param internships List of internships to display
+     * @param title Title of the display section
+     */
     private void displayAllInternships(List<Internship> internships, String title) {
         if (internships.isEmpty()) {
             System.out.println("No internships found.");
@@ -421,7 +458,9 @@ public class CareerUI implements FilterOptions{
         System.out.println("=====================================");
     }
     
-    
+    /**
+     * Allows the staff to change their password.
+     */
     private void changePassword() {
         System.out.println("\n=== CHANGE PASSWORD ===");
         
