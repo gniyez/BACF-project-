@@ -39,7 +39,15 @@ public class CSVLoader {
         
         return users;
     }
-    
+     /**
+     * Loads student data from a CSV file.
+     * Each line is validated for correct ID format, year range, and required fields.
+     * Errors are logged and skipped.
+     *
+     * @param users    list to add loaded {@link Student} objects
+     * @param filename CSV file path containing student data
+     * @throws IOException if the file cannot be read
+     */
     private void loadStudentsFromCSV(List users, String filename) throws IOException {
         int loadedCount = 0;
         int errorCount = 0; //changed erorr handling format 
@@ -122,7 +130,14 @@ public class CSVLoader {
             throw e;
         }
     }
-    
+      /**
+     * Loads career service staff data from a CSV file.
+     * Skips invalid or incomplete lines.
+     *
+     * @param users    list to add loaded {@link CareerServiceStaff} objects
+     * @param filename CSV file path containing staff data
+     * @throws IOException if the file cannot be read
+     */
     private void loadStaffFromCSV(List<User> users, String filename) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line;
@@ -166,7 +181,15 @@ public class CSVLoader {
             System.out.println("Successfully loaded " + loadedCount + " staff members");
         }
     }
-    
+     /**
+     * Loads company representatives from a CSV file.
+     * Validates email format and status field.
+     * Invalid lines are skipped with warnings.
+     *
+     * @param users    list to add loaded {@link CompanyRepresentative} objects
+     * @param filename CSV file path containing company representatives
+     * @throws IOException if the file cannot be read
+     */
     private void loadCompanyRepsFromCSV(List<User> users, String filename) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line;
@@ -226,7 +249,14 @@ public class CSVLoader {
             System.out.println("Starting with empty company representatives list.");
         }
     }
-    
+      /**
+     * Loads internships from a CSV file.
+     * Each line is validated and parsed into an {@link Internship} object.
+     * Invalid lines are skipped.
+     *
+     * @param filename CSV file path containing internship data
+     * @return list of {@link Internship} objects
+     */
     public List<Internship> loadInternshipsFromCSV(String filename) {
         List<Internship> internships = new ArrayList<>();
         
