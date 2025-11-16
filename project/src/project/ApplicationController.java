@@ -2,14 +2,30 @@ package project;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Controller class that manages internship applications.
+ * Handles submission, approval/rejection, eligibility checks,
+ * withdrawal requests, and placement acceptance.
+ */
 public class ApplicationController{
-    //create an application list so that can filter later 
+      /** List of all applications */
     private final List<Application> applications = new ArrayList<>();
-
+      /**
+     * Returns the list of all applications.
+     * 
+     * @return list of applications
+     */
     public List <Application> getApplications(){
         return applications;
     }
+    /**
+     * Submits an application for a student to an internship if eligible
+     * and if the student hasn't reached the maximum allowed applications.
+     * 
+     * @param student    the student applying
+     * @param internship the internship to apply for
+     * @return true if application is successful, false otherwise
+     */
 //updated below to return boolean
     public boolean applyInternship(Student student,Internship internship){
         long count = applications.stream()
@@ -41,7 +57,14 @@ public class ApplicationController{
             return false;
         }
     }
-
+/**
+     * Checks whether a student is eligible for a given internship
+     * based on year of study and internship level.
+     * 
+     * @param student    the student
+     * @param internship the internship
+     * @return true if eligible, false otherwise
+     */
     public boolean checkEligibility(Student student ,Internship internship){
         int year=student.getYearOfStudy();
         String level=internship.getLevel();
@@ -54,7 +77,11 @@ public class ApplicationController{
                    InternshipLevel.ADVANCED.matches(level);
         }      
     }
-    
+    /**
+     * Displays all applications and their status for a specific student.
+     * 
+     * @param student the student whose applications are displayed
+     */
     public void viewApplicationStatus(Student student){
         System.out.println("Applications for: "+student.getName());
         boolean found = false;
@@ -80,7 +107,12 @@ public class ApplicationController{
             System.out.println("No applications found.");
         }
     }
-
+/**
+     * Submits a withdrawal request for a student's application.
+     * 
+     * @param student the student requesting withdrawal
+     * @param app     the application to withdraw
+     */
     public void requestWithdrawal(Student student, Application app) {
         if (Status.WITHDRAWN.matches(app.getStatus())) {
             System.out.println("Application is already withdrawn.");
@@ -97,7 +129,11 @@ public class ApplicationController{
         System.out.println("Waiting for approval from Career Center Staff.");
         System.out.println("Current application status: " + app.getStatus());
     }
-  
+   /**
+     * Processes an approved withdrawal request and updates internship slots if needed.
+     * 
+     * @param app the application with approved withdrawal
+     */
     public void processApprovedWithdrawal(Application app) {
         String oldStatus = app.getStatus();
         updateApplicationStatus(app, Status.WITHDRAWN.name());
@@ -110,7 +146,13 @@ public class ApplicationController{
             System.out.println("Slots restored. Available slots: " + internship.getSlots());
         }
     }
-    
+     /**
+     * Accepts a successful internship placement for a student,
+     * updates internship slots, and withdraws other applications automatically.
+     * 
+     * @param student the student accepting the placement
+     * @param app     the application being accepted
+     */
     //changed to synchronised 
     public synchronized void acceptPlacement(Student student, Application app){
     	Internship internship = app.getInternship();
@@ -149,20 +191,43 @@ public class ApplicationController{
         System.out.println("Placement accepted for: " + internship.getInternshipTitle());
         System.out.println("All other applications have been automatically withdrawn.");
     }
-
+/**
+     * Approves a student's application for an internship.
+     * 
+     * @param rep the company representative approving
+     * @param app the application being approved
+     */
     public void approveApplication(CompanyRepresentative rep,Application app){
         updateApplicationStatus(app, Status.SUCCESSFUL.name());
         System.out.println(rep.getCompanyName()+" approved application "+app.getApplicationID());
     }
+    /**
+     * Rejects a student's application for an internship.
+     * 
+     * @param rep the company representative rejecting
+     * @param app the application being rejected
+     */
     public void rejectApplication(CompanyRepresentative rep,Application app){
         updateApplicationStatus(app, Status.UNSUCCESSFUL.name());
         System.out.println(rep.getCompanyName()+" rejected application "+app.getApplicationID());
 
     }
+    /**
+     * Updates the status of a specific application.
+     * 
+     * @param app    the application
+     * @param status the new status
+     */
     public void updateApplicationStatus(Application app,String status){
         app.setStatus(status);
     }
-
+/**
+     * Checks if a student has already applied for a specific internship.
+     * 
+     * @param student    the student
+     * @param internship the internship
+     * @return true if the student has applied, false otherwise
+     */
     public boolean hasApplied(Student student, Internship internship){
         if (student == null || internship == null) return false;
         List<Application> apps = getApplications();
@@ -180,6 +245,13 @@ public class ApplicationController{
             }
             return false;
             }
+    /**
+     * Returns all applications for a specific internship.
+     * Useful for calculating suitability scores.
+     * 
+     * @param internship the internship
+     * @return list of applications for the internship
+     */
     //returns all applications for a given Internship; for separate smart scoring in company UI
     public List<Application> getApplicationsForInternship(Internship internship) {
         List<Application> list = new ArrayList<>();
