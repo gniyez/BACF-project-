@@ -108,7 +108,9 @@ public class StudentUI implements FilterOptions{
                }
           }
     }
-
+/**
+     * Allows the student to apply for an internship from eligible internships.
+     */
      private void applyInternship(){
     	 List<Internship> eligibleInternships = internshipController.getEligibleInternshipsForStudent(currentUser);
 
@@ -150,7 +152,9 @@ public class StudentUI implements FilterOptions{
           }
      }
      
-
+/**
+     * Lists all internships visible to the student, applying filters if any.
+     */
      private void listInternships() {                                 
     	 List<Internship> eligibleInternships = new ArrayList<>();
     	    
@@ -171,7 +175,12 @@ public class StudentUI implements FilterOptions{
     private void displayInternships(List<Internship> internships, String title) {
     displayInternships(internships, title, false);
 }
-
+ /**
+     * Displays the list of internships with optional matching score.
+     * @param internships List of internships to display
+     * @param title Title for the display
+     * @param showMatchingScore Whether to show the suitability score
+     */
     private void displayInternships(List<Internship> internships, String title, boolean showMatchingScore) {
         if (internships.isEmpty()) { 
             System.out.println("No internships available."); 
@@ -205,7 +214,11 @@ public class StudentUI implements FilterOptions{
         }
         System.out.println("===============================");
     }
- 
+ /**
+     * Determines if a given internship is visible to the student.
+     * @param internship Internship to check
+     * @return true if visible, false otherwise
+     */
      private boolean isInternshipVisibleToStudent(Internship internship) {
     	    //Must be approved by career staff
     	    if (!Status.APPROVED.matches(internship.getInternshipStatus())) {
@@ -236,12 +249,16 @@ public class StudentUI implements FilterOptions{
     	    
     	    return internship.getSlots() > 0;
     	}
-
+/**
+     * Views the status of all applications for the current student.
+     */   
     public void viewApplicationStatus(){
         appController.viewApplicationStatus(currentUser);
     }
     
-    
+   /**
+     * Allows the student to accept a successful placement offer.
+     */
     public void acceptPlacement(){
      List<Application> mine = new ArrayList<>();
           for (Application app : appController.getApplications()) {              
@@ -275,6 +292,9 @@ public class StudentUI implements FilterOptions{
          }
                appController.acceptPlacement(currentUser, mine.get(idx));          
     }
+    /**
+     * Allows the student to request withdrawal from an application.
+     */
     private void requestWithdrawal(){  
         List<Application> mine = new ArrayList<>();
         for (Application app : appController.getApplications()) {
@@ -314,7 +334,9 @@ public class StudentUI implements FilterOptions{
             Application app = mine.get(idx);
             appController.requestWithdrawal(currentUser, app);
     }
-    
+    /**
+     * Allows the student to filter internships based on a chosen criteria.
+     */ 
 
     private void filterInternships() {
         String criteria;
@@ -350,7 +372,9 @@ public class StudentUI implements FilterOptions{
         System.out.println("Filter settings saved. Use 'View Internships' to see filtered results.");
     
     }
-    
+    /**
+     * Allows the student to change their password.
+     */
     private void changePassword() {
         System.out.println("\n=== CHANGE PASSWORD ===");
         
@@ -385,7 +409,9 @@ public class StudentUI implements FilterOptions{
         logInController.changePassword(currentUserID, currentPassword, newPassword);
         System.out.println("Returning to main menu...");
     }
-
+/**
+     * Lists all internships with additional browsing and sorting tools.
+     */
     private void listAllInternshipsWithTools(){
         List<Internship> allVisible;
         try {
@@ -447,7 +473,10 @@ public class StudentUI implements FilterOptions{
         }
     }
 }
-
+/**
+     * Retrieves all internships visible to the student, including previously applied ones.
+     * @return List of visible internships
+     */
     private List<Internship> getAllVisibleInternships(){
         List<Internship> visible = new ArrayList<>();
         if(internshipController == null) {
@@ -475,7 +504,9 @@ public class StudentUI implements FilterOptions{
         }
         return visible;
     }
-    
+   /**
+     * Lists all internships sorted by the student's matching score.
+     */ 
     private void listAllInternshipsByMatchingScore() {
     List<Internship> all = getAllVisibleInternships();
 
