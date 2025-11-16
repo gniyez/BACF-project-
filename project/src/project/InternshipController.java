@@ -17,25 +17,28 @@ public class InternshipController implements FilterOptions{
     public InternshipController() {
         this.internships = new ArrayList<>();
     }
-     /**
-     * Constructor to initialize with an existing list of internships.
+
+    /**
+     * Constructs an InternshipController with an existing list of internships.
      *
-     * @param internships list of internships to manage
+     * @param internships the list of internships to manage
      */
     public InternshipController(List<Internship> internships){
             this.internships=internships;
     }
+    
     /**
-     * Returns all internships managed by this controller.
+     * Returns the list of all internships.
+     * This is used by the main system and different UIs that need to view
+     * or work with all internship listings.
      *
-     * @return list of all internships
+     * @return the list of internships
      */
     public List<Internship> getInternships(){
-            return internships; //keep bc Internship management system, student UI and company UI and career UI callers depend on this 
+        return internships; 
     }
-
-//added, bc getInternships() returns all internships (for admin views and company reps also)
-//but get eligible internshsips for student returns filtered internships specific to the current user
+    //added, bc getInternships() returns all internships (for admin views and company reps also)
+    //but get eligible intenrhsips for student returns filtered internships specific to the current user
 /**
      * Returns internships that a given student is eligible to apply for.
      * Filters internships based on approval status, visibility, student's major,
@@ -124,7 +127,8 @@ public class InternshipController implements FilterOptions{
      * @return list of internships matching the filter
      */
     public List<Internship> filter(String criteria, String value) {   
-        return this.filter(internships, criteria, value);}
+        return this.filter(internships, criteria, value);
+    }
 
     
     // Returns all internships for a given company name; for separate smart scoring in companyUI
@@ -143,5 +147,4 @@ public class InternshipController implements FilterOptions{
         }
         return list;
     }
-
-}
+    }
