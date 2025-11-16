@@ -2,10 +2,6 @@ package project;
 /**
  * Abstract class User representing a user in the internship management system.
  * Contains common attributes and methods for all user types.
- * 
- * @author SC2002 BACF (Carin, Leyi, Pei Shan, Serene, Zhen Ying)
- * @version 1.0
- * @since 2025
  */
 public abstract class User{
     private String userID;
