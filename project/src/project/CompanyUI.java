@@ -7,7 +7,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
-
+/**
+ * Console-based UI for Company Representatives to manage internships and applications.
+ * Allows login, registration, internship creation/editing/deletion, application approval,
+ * and filtering/sorting of internships.
+ */
 public class CompanyUI implements FilterOptions{
     private final LogInController logInController;
     private final InternshipController internshipController;
@@ -19,7 +23,14 @@ public class CompanyUI implements FilterOptions{
     private String currentFilterCriteria = null;
     private String currentFilterValue = null;
     private Application selectedApp = null;
-    
+    /**
+     * Constructs a CompanyUI.
+     *
+     * @param logInController      Controller for login operations
+     * @param appController        Controller for applications
+     * @param internshipController Controller for internships
+     * @param users                List of all users
+     */
     public CompanyUI(LogInController logInController, ApplicationController appController, 
             InternshipController internshipController, List<User> users) {  
         this.logInController = logInController;                //--- UPDATE --- specify generic type
@@ -35,7 +46,9 @@ public class CompanyUI implements FilterOptions{
         }
 
     }
-
+/**
+     * Starts the Company Representative portal with login and registration options.
+     */
     public void start(){
         while (true) {
             System.out.println("\n=== COMPANY REPRESENTATIVE PORTAL ===");
@@ -58,7 +71,10 @@ public class CompanyUI implements FilterOptions{
             }
         }
     }
-
+ /**
+     * Performs login for a company representative.
+     * Validates credentials and sets the currentUser.
+     */
     private void login(){
         System.out.println("\n=== COMPANY REPRESENTATIVE LOGIN ===");
         System.out.println("Enter your User ID (email):");
@@ -78,7 +94,10 @@ public class CompanyUI implements FilterOptions{
             }
         }
     }
-
+ /**
+     * Registers a new company representative account.
+     * Ensures email uniqueness and non-empty fields.
+     */
     private void register(){
         System.out.println("\n=== COMPANY REPRESENTATIVE REGISTRATION ===");
         
@@ -145,11 +164,19 @@ public class CompanyUI implements FilterOptions{
         System.out.println("Please wait for approval from Career Center Staff before logging in.");
 
     }
+    /**
+     * Validates an email address.
+     *
+     * @param email Email to validate
+     * @return true if valid, false otherwise
+     */
     //added email format validation 
     private boolean isValidEmail(String email){
         return email.matches("^[\\w._%+-]+@[\\w.-]+\\.[a-zA-Z]{2,}$");
     }
-
+ /**
+     * Displays the main menu for logged-in company representatives.
+     */
     private void showMainMenu(){
         while (true){
             System.out.println("COMPANY REPRESENTATIVE MENU");
@@ -202,7 +229,10 @@ public class CompanyUI implements FilterOptions{
         }
     }
     
-
+/**
+     * Creates a new internship for the current company representative.
+     * Validates input fields, duplicate internships, dates, and slot limits.
+     */
     private void createInternship(){
         try{
             //collect all required info
@@ -316,7 +346,9 @@ public class CompanyUI implements FilterOptions{
         System.out.println("Error creating internship: " + e.getMessage());
     }
 }
-
+/**
+     * Displays all applications submitted to the current company's internships.
+     */
 private void viewApplications(){
         List<Application> all = appController.getApplications(); 
         boolean any = false;
@@ -331,7 +363,10 @@ private void viewApplications(){
         }
         if (!any) System.out.println("No applications for your internships.");
     }
-
+/**
+     * Edits a selected internship. Only PENDING internships can be edited.
+     * Prompts for new values and allows skipping fields.
+     */
     private void editInternship() {
         List<Internship> myInternships = getMyInternships();
         
@@ -413,7 +448,9 @@ private void viewApplications(){
             
                
      }
-    
+  /**
+     * Deletes a selected internship after user confirmation.
+     */  
 
     private void deleteInternship() {
         List<Internship> myInternships = getMyInternships();
@@ -457,7 +494,11 @@ private void viewApplications(){
         
             
     }
-
+/**
+     * Returns a list of internships created by the current company representative.
+     *
+     * @return List of company's internships
+     */
 
     private List<Internship> getMyInternships() {
         List<Internship> myInternships = new ArrayList<>();
@@ -468,7 +509,9 @@ private void viewApplications(){
         }
         return myInternships;
     }
-    
+   /**
+     * Approves or rejects a selected application for the company's internship.
+     */ 
     private void manageApplications(){
         viewApplications();
         
@@ -525,7 +568,9 @@ private void viewApplications(){
             default -> System.out.println("Invalid.");
         }
     }
-
+/**
+     * Displays the current company's internships with optional filtering and sorting.
+     */
     private void viewMyInternships(){ 
     	List<Internship> myInternships = getMyInternships();
         
@@ -539,7 +584,12 @@ private void viewApplications(){
         
         displayCompanyInternships(myInternships, "MY INTERNSHIPS");
     }
-    
+   /**
+     * Displays a list of internships in a readable format.
+     *
+     * @param internships List of internships to display
+     * @param title       Title to show
+     */ 
     private void displayCompanyInternships(List<Internship> internships, String title) {
         if (internships.isEmpty()) {
             System.out.println("No internships found.");
@@ -570,6 +620,9 @@ private void viewApplications(){
         }
         System.out.println("=======================");
     }
+    /**
+     * Toggles the visibility of a selected internship.
+     */
     private void toggleVisibility(){
         try {
             viewMyInternships();
@@ -608,7 +661,9 @@ private void viewApplications(){
             System.out.println("Invalid input.");
         }
     }
-    
+     /**
+     * Applies a filter to the current company's internships based on criteria and value.
+     */
     
         
     private void filterInternships() {
@@ -651,7 +706,9 @@ private void viewApplications(){
         System.out.println("Filter applied: " + criteria + " = " + value);
         System.out.println("Filter settings saved. Use 'View My Internships' to see filtered results.");
     }
-    
+    /**
+     * Allows the current user to change their password after validating the old one.
+     */
     private void changePassword() {
         System.out.println("\n=== CHANGE PASSWORD ===");
         
@@ -683,7 +740,9 @@ private void viewApplications(){
         logInController.changePassword(currentUserID, currentPassword, newPassword);
             System.out.println("Returning to main menu...");
          }
-
+/**
+     * Displays applicants for a selected internship sorted by suitability score.
+     */
     private void showBestApplicantsByScore() {
         //lists the company rep's internship offerings and prompts them to select one
         List<Internship> internships = internshipController.getInternshipsForCompany(currentUser.getCompanyName());
