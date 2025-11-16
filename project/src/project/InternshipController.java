@@ -4,25 +4,46 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
+/**
+ * Controller class to manage internships, including creation, filtering,
+ * visibility toggling, and retrieving internships for students or companies.
+ * Implements {@link FilterOptions} to allow filtering internships by various criteria.
+ */
 public class InternshipController implements FilterOptions{
     private List<Internship> internships = new ArrayList<>();
-    
+    /**
+     * Default constructor initializes an empty internship list.
+     */
     public InternshipController() {
         this.internships = new ArrayList<>();
     }
-    
+     /**
+     * Constructor to initialize with an existing list of internships.
+     *
+     * @param internships list of internships to manage
+     */
     public InternshipController(List<Internship> internships){
             this.internships=internships;
     }
-    
+    /**
+     * Returns all internships managed by this controller.
+     *
+     * @return list of all internships
+     */
     public List<Internship> getInternships(){
             return internships; //keep bc Internship management system, student UI and company UI and career UI callers depend on this 
     }
 
 //added, bc getInternships() returns all internships (for admin views and company reps also)
-//but get eligible intenrhsips for student returns filtered internships specific to the current user
-
+//but get eligible internshsips for student returns filtered internships specific to the current user
+/**
+     * Returns internships that a given student is eligible to apply for.
+     * Filters internships based on approval status, visibility, student's major,
+     * application period, student's eligibility for the internship level, and available slots.
+     *
+     * @param student the student to check eligibility for
+     * @return list of eligible internships for the student
+     */
     public List<Internship> getEligibleInternshipsForStudent(Student student){
         List<Internship> eligible = new ArrayList<>();
         LocalDate today = LocalDate.now();
@@ -46,7 +67,21 @@ public class InternshipController implements FilterOptions{
         return eligible;
     }
 
-
+/**
+     * Creates a new internship listing for a company representative.
+     *
+     * @param company_rep   the company representative creating the internship
+     * @param title         title of the internship
+     * @param description   description of the internship
+     * @param level         level of internship (BASIC, INTERMEDIATE, ADVANCED)
+     * @param preferredMajor preferred major required
+     * @param openDate      opening date of the internship application
+     * @param closeDate     closing date of the internship application
+     * @param slots         number of available slots (max 10)
+     * @return the created Internship object
+     * @throws IllegalArgumentException if slots > 10
+     * @throws IllegalStateException    if the company already has 5 internships
+     */
     public Internship createInternship(CompanyRepresentative company_rep,
                                  String title, String description,
                                  String level, String preferredMajor,
@@ -65,7 +100,11 @@ public class InternshipController implements FilterOptions{
         internships.add(internship);
         return internship;
     }
-    
+     /**
+     * Toggles the visibility of an internship listing.
+     *
+     * @param internship the internship to toggle visibility
+     */
     public void toggleVisibility(Internship internship) {
       if (internships.contains(internship)) {
         boolean newValue = !internship.getVisibility();  //flip
@@ -76,12 +115,25 @@ public class InternshipController implements FilterOptions{
      }
     }
     
-    //Use the default filter method from FilterOptions interface
+     /**
+     * Filters internships by a specified criteria and value.
+     * Uses the default {@link FilterOptions#filter(List, String, String)} method.
+     *
+     * @param criteria the field to filter by (status, level, companyName, etc.)
+     * @param value    the value to match
+     * @return list of internships matching the filter
+     */
     public List<Internship> filter(String criteria, String value) {   
         return this.filter(internships, criteria, value);}
 
     
     // Returns all internships for a given company name; for separate smart scoring in companyUI
+    /**
+     * Returns all internships belonging to a specific company.
+     *
+     * @param companyName the company name to search for
+     * @return list of internships for the given company
+     */
     public List<Internship> getInternshipsForCompany(String companyName) {
         List<Internship> list = new ArrayList<>();
         for (Internship i : getInternships()) {
