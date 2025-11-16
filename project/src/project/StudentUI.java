@@ -5,7 +5,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
-
+/**
+ * Represents the student user interface for interacting with the internship management system.
+ * Provides options for viewing eligible internships, applying, checking status, filtering,
+ * accepting offers, requesting withdrawal, changing password, and browsing internships.
+ */
 public class StudentUI implements FilterOptions{
      private final ApplicationController appController;
      private final InternshipController internshipController;
