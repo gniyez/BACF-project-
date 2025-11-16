@@ -1,10 +1,9 @@
 package project;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 public class InternshipController implements FilterOptions{
     private List<Internship> internships = new ArrayList<>();
@@ -29,7 +28,7 @@ public class InternshipController implements FilterOptions{
         LocalDate today = LocalDate.now();
 
         for (Internship internship : internships){
-            if(!"APPROVED".equals(internship.getInternshipStatus()))
+            if(!Status.APPROVED.matches(internship.getInternshipStatus()))
                 continue;
             if(!internship.getVisibility())
                 continue;
@@ -61,7 +60,7 @@ public class InternshipController implements FilterOptions{
                throw new IllegalStateException("Each company can create at most 5 internship listings");
         }
         
-        Internship internship = new Internship(title, description, level, preferredMajor, "PENDING",
+        Internship internship = new Internship(title, description, level, preferredMajor, Status.PENDING.name(),
         openDate, closeDate, company_rep.getCompanyName(), slots);
         internships.add(internship);
         return internship;
@@ -82,19 +81,15 @@ public class InternshipController implements FilterOptions{
         return this.filter(internships, criteria, value);}
 
     
-    //maybe need to delete this !!!
-    public List<Internship> sortInternships(String orderBy){
-        return internships.stream().sorted((i1, i2) -> {
-            switch (orderBy.toLowerCase()){
-                case "company":
-                    return i1.getCompanyName().compareToIgnoreCase(i2.getCompanyName());
-                case "title":
-                    return i1.getInternshipTitle().compareToIgnoreCase(i2.getInternshipTitle());
-                case "slots":
-                    return Integer.compare(i1.getSlots(), i2.getSlots());
-                default:
-                    return 0;
+    // Returns all internships for a given company name; for separate smart scoring in companyUI
+    public List<Internship> getInternshipsForCompany(String companyName) {
+        List<Internship> list = new ArrayList<>();
+        for (Internship i : getInternships()) {
+            if (i != null && i.getCompanyName().equalsIgnoreCase(companyName)) {
+                list.add(i);
             }
-        }).collect(Collectors.toList());
+        }
+        return list;
     }
+
 }

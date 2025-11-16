@@ -1,15 +1,16 @@
+
 package project;
 
-import java.util.Scanner;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Scanner;
 
 public class CareerUI implements FilterOptions{
-    private CareerServiceController csController;
-    private InternshipController internshipController;
-    private LogInController logInController;
-    private Scanner sc;
+    private final CareerServiceController csController;
+    private final InternshipController internshipController;
+    private final LogInController logInController;
+    private final Scanner sc;
     private CareerServiceStaff currentUser;
     
     private String currentFilterCriteria = null;
@@ -35,8 +36,8 @@ public class CareerUI implements FilterOptions{
         if (loginSuccess) {
             // Get the current user from login controller
             User loggedInUser = logInController.getCurrentUser();
-            if (loggedInUser instanceof CareerServiceStaff) {
-                this.currentUser = (CareerServiceStaff) loggedInUser;
+            if (loggedInUser instanceof CareerServiceStaff careerServiceStaff) {
+                this.currentUser = careerServiceStaff;
                 showStaffMenu();
             } else {
                 System.out.println("Access denied. Not a career service staff member.");
@@ -60,9 +61,19 @@ public class CareerUI implements FilterOptions{
             System.out.println("11. Change Password");
             System.out.println("0. Logout");
 
-            System.out.print("Choose an option: ");
-            int choice = sc.nextInt();
-            sc.nextLine(); 
+            int choice = -1;
+            while (true) { 
+                System.out.print("Choose an option: ");
+                String input = sc.nextLine().trim();
+                try {
+                    choice = Integer.parseInt(input);
+                    if (choice >= 0 && choice <=11) break;
+                    System.out.println("Invalid choice. Please enter a number between 0 and 11");
+
+                } catch (NumberFormatException e) {
+                    System.out.println("Please enter a valid number");
+                }
+            }
 
             switch (choice) {
                 case 1 -> approveCompanyFlow();
@@ -99,20 +110,37 @@ public class CareerUI implements FilterOptions{
 
     private void approveCompanyFlow() {
         System.out.print("Enter company representative email to approve: ");
-        String repID = sc.nextLine();
+        String repID;
+        do { 
+            System.out.println("Enter company representative email to approve: ");
+            repID = sc.nextLine().trim();
+            if (repID.isEmpty()){
+                System.out.println("ID cannot be empty");
+            }
+        } while (repID.isEmpty());
         csController.approveCompany(currentUser.getUserID(),repID);
     }
 
     private void rejectCompanyFlow() {
         System.out.print("Enter company representative email to reject: ");
-        String repID = sc.nextLine();
+        String repID;
+        do{
+            System.out.print("Enter company representative email to reject");
+            repID = sc.nextLine().trim();
+            if (repID.isEmpty()){
+                System.out.println("ID cannot be empty");
+
+            }
+
+        }
+        while(repID.isEmpty());
         csController.rejectCompany(currentUser.getUserID(), repID);
     }
 
     private void approveInternshipFlow() {
     	List<Internship> pendingInternships = new ArrayList<>();
         for (Internship i : internshipController.getInternships()) {
-            if ("PENDING".equals(i.getInternshipStatus())) {
+            if (Status.PENDING.matches(i.getInternshipStatus())) {
                 pendingInternships.add(i);
             }
         }
@@ -131,29 +159,30 @@ public class CareerUI implements FilterOptions{
                               " | Visible=" + internship.getVisibility());
         }
         
-        System.out.print("Enter number to approve: ");
-        try {
-            int choice = sc.nextInt();
-            sc.nextLine(); 
-            
-            if (choice < 1 || choice > pendingInternships.size()) {
-                System.out.println("Invalid selection.");
-                return;
+
+        int choice = -1;
+        while (true) { 
+            System.out.print("Enter number to approve: ");
+            String input = sc.nextLine().trim();
+            try {
+                choice = Integer.parseInt(input);
+                if(choice >= 1 && choice <= pendingInternships.size()) break;
+                System.out.println("Invalid selection. Enter number from the list");
+
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid number");
             }
+
+        }
             
             Internship selectedInternship = pendingInternships.get(choice - 1);
             csController.approveInternship(currentUser.getUserID(), selectedInternship);
-            
-        } catch (Exception e) {
-            System.out.println("Invalid input. Please enter a number.");
-            sc.nextLine(); 
-        }
     }
 
     private void rejectInternshipFlow() {
-    	List<Internship> pendingInternships = new ArrayList<>();
+        List<Internship> pendingInternships = new ArrayList<>();
         for (Internship i : internshipController.getInternships()) {
-            if ("PENDING".equals(i.getInternshipStatus())) {
+            if (Status.PENDING.matches(i.getInternshipStatus())) {
                 pendingInternships.add(i);
             }
         }
@@ -172,25 +201,24 @@ public class CareerUI implements FilterOptions{
                               " | Visible=" + internship.getVisibility());
         }
         
-        System.out.print("Enter number to reject: ");
-        try {
-            int choice = sc.nextInt();
-            sc.nextLine(); 
-            
-            if (choice < 1 || choice > pendingInternships.size()) {
-                System.out.println("Invalid selection.");
-                return;
+        int choice = -1;
+        while (true) { 
+            System.out.print("Enter number to reject: ");
+            String input = sc.nextLine().trim();
+            try{
+                choice = Integer.parseInt(input);
+                if(choice >= 1 && choice <= pendingInternships.size()) break;
+                System.out.println("Invalid selection. Enter number from the list");
+
+            } catch (NumberFormatException e){
+                System.out.println("Please enter a valid number");   
             }
+        }
             
             Internship selectedInternship = pendingInternships.get(choice - 1);
             csController.rejectInternship(currentUser.getUserID(), selectedInternship);
-            
-        } catch (Exception e) {
-            System.out.println("Invalid input. Please enter a number.");
-            sc.nextLine(); 
-        }
     }
-
+    
     private void generateReportFlow() {
         System.out.print("Enter status filter (or leave blank): ");
         String status = sc.nextLine();
@@ -211,9 +239,8 @@ public class CareerUI implements FilterOptions{
         boolean any=false;
         List<User> users = csController.getUsers();
         for (User u:users){
-            if (u instanceof CompanyRepresentative){
-                CompanyRepresentative r=(CompanyRepresentative)u;
-                if (!"APPROVED".equals(r.getStatus()) && !"REJECTED".equals(r.getStatus())) {
+            if (u instanceof CompanyRepresentative r){
+                if (!Status.APPROVED.matches(r.getStatus()) && !Status.REJECTED.matches(r.getStatus())) {
                     any = true;
                     System.out.println(r.getUserID() + " | " + r.getCompanyName() + " | status=" + r.getStatus());
                 }
@@ -225,7 +252,7 @@ public class CareerUI implements FilterOptions{
     private void listPendingInternships() {             
         List<Internship> pendingInternships = new ArrayList<>();
         for (Internship internship : internshipController.getInternships()) {
-            if ("PENDING".equals(internship.getInternshipStatus())) {
+            if (Status.PENDING.matches(internship.getInternshipStatus())) {
                 pendingInternships.add(internship);
             }
         }
@@ -253,9 +280,16 @@ public class CareerUI implements FilterOptions{
     }
     
     private void filterInternships(){
-        System.out.println("Enter filter criteria (status/preferredmajors/internshiplevel/closingdate/opendate/companyname/visibility):");
-        System.out.println("Or type 'clear' to remove filters");
-        String criteria = sc.nextLine();
+        String criteria;
+        do{
+            System.out.println("Enter filter criteria (status/preferredmajors/internshiplevel/closingdate/opendate/companyname/visibility):");
+            System.out.println("Or type 'clear' to remove filters");
+            criteria = sc.nextLine().trim();
+            if (criteria.isEmpty()){
+                System.out.println("Criteria cannot be empty. please try again");
+
+            }
+        } while(criteria.isEmpty());
         
         if ("clear".equalsIgnoreCase(criteria)) {
             currentFilterCriteria = null;
@@ -264,8 +298,16 @@ public class CareerUI implements FilterOptions{
             return;
         }
         
-        System.out.println("Enter filter value: ");
-        String value = sc.nextLine();
+        String value;
+        do{
+            System.out.println("Enter filter value");
+            value = sc.nextLine().trim();
+            if(value.isEmpty()){
+                System.out.println("Fitler value cannot be empty, please try again");
+
+            }
+
+        } while (value.isEmpty());
         
         //Save filter settings
         currentFilterCriteria = criteria;
@@ -293,38 +335,46 @@ public class CareerUI implements FilterOptions{
                               " | Company: " + app.getInternship().getCompanyName());
         }
         
-        System.out.print("Choose request to manage: ");
-        try {
-            int choice = sc.nextInt();
-            sc.nextLine();
-            
-            if (choice < 1 || choice > pendingRequests.size()) {
-                System.out.println("Invalid selection.");
-                return;
+        int choice = -1;
+        while(true){
+            System.out.print("Choose request to manage");
+            String input = sc.nextLine().trim();
+            try {
+                choice = Integer.parseInt(input);
+                if(choice >= 1 && choice <= pendingRequests.size()) break;
+                System.out.println("Invalid selection. Choose a number from the list");
+
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid number");
             }
-            
+        }
+        
             Application selectedApp = pendingRequests.get(choice - 1);
             
-            System.out.println("1. Approve Withdrawal");
-            System.out.println("2. Reject Withdrawal");
-            System.out.print("Choose action: ");
             
-            int action = sc.nextInt();
-            sc.nextLine();
+            int action = -1;
+            while(true){
+                System.out.println("1. Approve Withdrawal");
+                System.out.println("2. Reject Withdrawal");
+                System.out.print("Choose action: ");
+                String input = sc.nextLine().trim();
+                try {
+                    action = Integer.parseInt(input);
+                    if (action == 1 || action == 2) break;
+                    System.out.println("Invalid action. Enter 1 or 2");
+                } catch (NumberFormatException e) {
+                    System.out.println("Please enter 1 or 2");
+                }
+                
+            }
             
             if (action == 1) {
                 csController.approveWithdrawal(currentUser.getUserID(), selectedApp);
             } else if (action == 2) {
                 csController.rejectWithdrawal(currentUser.getUserID(), selectedApp);
-            } else {
-                System.out.println("Invalid action.");
-            }
-            
-        } catch (Exception e) {
-            System.out.println("Invalid input.");
-            sc.nextLine();
-        }
-    }
+            } 
+        }   
+    
     
     
     private void viewAllInternships() {
@@ -378,16 +428,24 @@ public class CareerUI implements FilterOptions{
         System.out.print("Enter current password: ");
         String currentPassword = sc.nextLine();
         
-        System.out.print("Enter new password: ");
-        String newPassword = sc.nextLine();
-        
-        System.out.print("Confirm new password: ");
-        String confirmPassword = sc.nextLine();
 
-        if (!newPassword.equals(confirmPassword)) {
-            System.out.println("Error: New passwords do not match.");
-            return;
-        }
+        String newPassword;
+        do { 
+            System.out.print("Enter new password: ");
+            newPassword = sc.nextLine();
+            if(newPassword.isEmpty()){
+              System.out.println("Error: New password cannot be empty.");  
+            }    
+        } while (newPassword.isEmpty());
+        
+        String confirmPassword;
+        do { 
+            System.out.println("Confirm new password");
+            confirmPassword = sc.nextLine();
+            if(!newPassword.equals(confirmPassword)){
+                System.out.println("Error: new passwords do not match. Please try again");
+            }
+        } while (!newPassword.equals(confirmPassword));
         
         if (newPassword.isEmpty()) {
             System.out.println("Error: New password cannot be empty.");
@@ -397,6 +455,5 @@ public class CareerUI implements FilterOptions{
         String currentUserID = currentUser.getUserID();
         logInController.changePassword(currentUserID, currentPassword, newPassword);
         System.out.println("Returning to main menu...");
-    }
-    
+    }  
 }

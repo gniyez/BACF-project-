@@ -12,7 +12,6 @@ package project;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.classfile.instruction.LineNumber;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
@@ -91,7 +90,7 @@ public class CSVLoader {
 
                         //validate required fields are not empty
                         if (name.isEmpty() || major.isEmpty() || email.isEmpty()){
-                            System.out.println("Warninig (Line " + lineNumber + "): Missing required field(s). Skipping entry");
+                            System.out.println("Warning (Line " + lineNumber + "): Missing required field(s). Skipping entry");
                             errorCount++;
                             continue;
                         }
@@ -149,9 +148,7 @@ public class CSVLoader {
                     try {
                         String staffID = data[0].trim();
                         String name = data[1].trim();
-                        String role = data[2].trim();
                         String department = data[3].trim();
-                        String email = data[4].trim();
                         
                         //Create CareerServiceStaff object by using staffID as userID
                         CareerServiceStaff staff = new CareerServiceStaff(staffID, name, department);
@@ -190,7 +187,6 @@ public class CSVLoader {
                 
                 if (data.length >= 7) {
                     try {
-                        String companyRepID = data[0].trim();
                         String name = data[1].trim();
                         String companyName = data[2].trim();
                         String department = data[3].trim();
@@ -273,7 +269,7 @@ public class CSVLoader {
                         internships.add(internship);
                         loadedCount++;
                         
-                    } catch (Exception e) {
+                    } catch (NumberFormatException e) {
                         System.out.println("Error parsing internship data: " + line + " - " + e.getMessage());
                     }
                 } else {

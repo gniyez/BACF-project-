@@ -1,11 +1,11 @@
 package project;
 
-import java.util.ArrayList;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Scanner;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
 
 public class CompanyUI implements FilterOptions{
@@ -16,14 +16,13 @@ public class CompanyUI implements FilterOptions{
     private final Scanner scanner;
     private final List<User> users; 
     private final Set<String> userIDs; //added for fast lookup
-    
     private String currentFilterCriteria = null;
     private String currentFilterValue = null;
-    
+    private Application selectedApp = null;
     
     public CompanyUI(LogInController logInController, ApplicationController appController, 
             InternshipController internshipController, List<User> users) {  
-        this.logInController = logInController;
+        this.logInController = logInController;                //--- UPDATE --- specify generic type
         this.appController = appController;
         this.internshipController = internshipController;
         this.scanner = new Scanner(System.in);
@@ -71,8 +70,8 @@ public class CompanyUI implements FilterOptions{
         
         if (loginSuccess) {
             User loggedInUser = logInController.getCurrentUser();
-            if (loggedInUser instanceof CompanyRepresentative) {
-                this.currentUser = (CompanyRepresentative) loggedInUser;
+            if (loggedInUser instanceof CompanyRepresentative companyRepresentative) {
+                this.currentUser = companyRepresentative;
                 showMainMenu();
             } else {
                 System.out.println("Access denied. Not a company representative.");
@@ -83,15 +82,21 @@ public class CompanyUI implements FilterOptions{
     private void register(){
         System.out.println("\n=== COMPANY REPRESENTATIVE REGISTRATION ===");
         
-        System.out.print("Enter your email: ");
-        String email = scanner.nextLine().trim();
+        //Email format validation 
+        String email;
+        do { 
+            System.out.print("Enter your email: ");
+            email = scanner.nextLine().trim();
+            if(email.isEmpty()){
+                System.out.println("Error. Empty email address");
+            } else if(!isValidEmail(email)){
+                System.out.println("Error. Invalid email address");
+                email = "";
+            }
+        } while (email.isEmpty());
 
-        //validate email format
-        if (email.isEmpty() || isValidEmail(email)) {
-            System.out.println("Error. Invalid or empty email address");
-            return;
-        }       
-        //Check if email already exists
+
+       //Check if email already exists
         if (userIDs.contains(email)){ // 0 1 lookup
             System.out.println("Error. A representative with this email already exists");
             return;
@@ -99,34 +104,39 @@ public class CompanyUI implements FilterOptions{
 
         //for each field, validates for empty inputs (added)
         
-        System.out.print("Enter your name: ");
-        String name = scanner.nextLine().trim();
-        if (name.isEmpty()){
-            System.out.println("Error: Name cannot be empty");
-            return;
-        }
-
+        //Non empty fields for name, company, department, position
+        String name;
+        do { 
+            System.out.println("Enter your name: ");
+            name = scanner.nextLine().trim();
+            if (name.isEmpty()){
+            System.out.println("Error: Name cannot be empty");}
+        } while (name.isEmpty());
         
-        System.out.print("Enter company name: ");
-        String companyName = scanner.nextLine().trim();
-        if (companyName.isEmpty()) {
-            System.out.println("Error. Company name cannot be empty");
-            return;
-        }
+        String companyName;
+        do { 
+            System.out.println("Enter company name: ");
+            companyName = scanner.nextLine().trim();
+            if (companyName.isEmpty()) {
+            System.out.println("Error. Company name cannot be empty");}
+        } while (companyName.isEmpty());
         
-        System.out.print("Enter department: ");
-        String department = scanner.nextLine().trim();
-        if (department.isEmpty()){
-            System.out.println("Error. Department cannot be empty.");
-            return;
-        }
+        String department;
+        do { 
+            System.out.print("Enter department: ");
+            department = scanner.nextLine().trim();
+                    if (department.isEmpty()){
+            System.out.println("Error. Department cannot be empty.");}            
+        } while (department.isEmpty());
         
-        System.out.print("Enter position: ");
-        String position = scanner.nextLine().trim();
-        if (position.isEmpty()){
-            System.out.println("Error. position cannot be empty");
-            return;
-        }
+        String position;
+        do { 
+            System.out.print("Enter position: ");
+            position = scanner.nextLine().trim();
+            if (position.isEmpty()){
+            System.out.println("Error. position cannot be empty");}
+        } while (position.isEmpty());
+        
         //Create and register the new representative
         CompanyRepresentative rep = new CompanyRepresentative(email, name, companyName, department, position);
         users.add(rep); 
@@ -151,15 +161,26 @@ public class CompanyUI implements FilterOptions{
             System.out.println("5. Approve/Reject Applications");
             System.out.println("6. View My Internships");
             System.out.println("7. Toggle Internship Visibility");
-            System.out.println("8. Filter Applications");
+            System.out.println("8. Filter Internships");
             System.out.println("9. Change Password");
+            System.out.println("10. View Applications by Suitability Score");
             System.out.println("0. Logout");
             System.out.println("═".repeat(50));
             
-            System.out.print("Choose an option: ");
+            
 
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+            int choice = -1;
+            while (true) { 
+                System.out.print("Choose an option: ");
+                String input = scanner.nextLine();
+                try {
+                    choice = Integer.parseInt(input.trim());
+                    if (choice >= 0 && choice <= 10) break;
+                    System.out.println("Invalid choice. Must be between 0 and 10");
+                } catch (NumberFormatException e) {
+                    System.out.println("Please enter a valid number");
+                }
+            }
 
             switch(choice){
                 case 1 -> createInternship();
@@ -171,6 +192,7 @@ public class CompanyUI implements FilterOptions{
                 case 7 -> toggleVisibility();
                 case 8 -> filterInternships();
                 case 9 -> changePassword();
+                case 10 -> showBestApplicantsByScore();
                 case 0 -> {
                     System.out.println("Goodbye!");
                     logInController.logout();
@@ -184,19 +206,44 @@ public class CompanyUI implements FilterOptions{
     private void createInternship(){
         try{
             //collect all required info
-            System.out.println("Enter internship title:");
-            String title = scanner.nextLine();
-            System.out.println("Enter internship description:");
-            String description = scanner.nextLine();
+            String title;
+            do { 
+                System.out.println("Enter internship title:");
+                title = scanner.nextLine().trim();
+                if (title.isEmpty()){
+                    System.out.println("Title cannot be empty");
+                }   
+            } while (title.isEmpty());
+            
+            String description;
+            do { 
+                System.out.println("Enter internship description");
+                description = scanner.nextLine().trim();
+                if (description.isEmpty()){
+                    System.out.println("Description cannot be empty");
+                }
+            } while (description.isEmpty());
 
             //level selection
-            System.out.println("Select internship level:");
-            System.out.println("1. Basic (Year 1-4)");
-            System.out.println("2. Intermediate (Year 3-4)");
-            System.out.println("3. Advanced (Year 3-4)");
-            System.out.println("Enter choice (1-3):");
-            int levelChoice = scanner.nextInt();
-            scanner.nextLine();
+            
+            int levelChoice = -1;
+            while (true) { 
+                System.out.println("Select internship level:");
+                System.out.println("1. Basic (Year 1-4)");
+                System.out.println("2. Intermediate (Year 3-4)");
+                System.out.println("3. Advanced (Year 3-4)");
+                System.out.println("Enter choice (1-3):");
+                String input = scanner.nextLine();    
+
+                try {
+                    levelChoice = Integer.parseInt(input.trim());
+                    if(levelChoice >= 1 && levelChoice <=3) break;
+                    System.out.println("Invalid choice. Select 1,2 or 3");
+
+                } catch (NumberFormatException e) {
+                    System.out.println("Please enter a number 1-3");
+                }
+            }
             
             String level = switch(levelChoice){
                 case 1 -> InternshipLevel.BASIC.name();
@@ -205,30 +252,72 @@ public class CompanyUI implements FilterOptions{
                 default -> throw new IllegalArgumentException("Invalid level choice");
             };
 
-            System.out.println("Enter preferred major:");
-            String preferredMajor = scanner.nextLine();
+            String preferredMajor;
+            do { 
+                System.out.println("Enter preferred major: ");
+                preferredMajor = scanner.nextLine().trim();
+                if(preferredMajor.isEmpty()){
+                    System.out.println("Preferred major cannot be empty");
+                }
+            } while (preferredMajor.isEmpty());
 
-            System.out.println("Enter opening date (YYYY-MM-DD):");
-            LocalDate openDate = LocalDate.parse(scanner.nextLine());
-
-            System.out.println("Enter closing date (YYYY-MM-DD):");
-            LocalDate closeDate = LocalDate.parse(scanner.nextLine());
-            
-            System.out.println("Enter number of slots (max 10):");
-            int slots = scanner.nextInt();
-            slots = Math.min(slots, 10); //enforce max slots
-
-            internshipController.createInternship(currentUser, title, description, level, preferredMajor, openDate, closeDate, slots);
-
-            System.out.println("Internship created successfully!");
-           
-        } catch (Exception e){
-            System.out.println("Error creating internship: " + e.getMessage());}
+            if (DuplicateInternshipGuard.isDuplicate(internshipController, currentUser, title, level)) {
+            System.out.println("Duplicate internship detected: you already have an internship with this title and level.");
+            return;
         }
+            //Validate dates in correct format. Closing date must be after Open;
+            LocalDate openDate = null;
+            while (openDate == null){
+                System.out.println("Enter opening date (YYYY-MM-DD):");
+                String input = scanner.nextLine().trim();
+                try {
+                    openDate = LocalDate.parse(input);
+                } catch (Exception e) {
+                    System.out.println("Invalid date format. Please enter in YYYY-MM-DD");
+                }    
+            }
 
- 
+            LocalDate closeDate = null;
+            while(closeDate == null){
+                System.out.println("Enter closing date (YYYY-MM-DD):");
+                String input = scanner.nextLine().trim();
+                try {
+                    LocalDate tmp = LocalDate.parse(input);
+                    if(tmp.isAfter(openDate)){
+                        closeDate = tmp;
+                    }
+                    else{
+                        System.out.println("Closing date must be after opening date");
+                    }
+                } catch (Exception e) {
+                    System.out.println("Invalid date format. Please use YYYY-MM-DD");
+                }
+            }
+        
+            //Number of slots validation 
+            int slots = 0;
+            while (true) { 
+                System.out.println("Enter number of slots (max 10):");
+                String input = scanner.nextLine().trim();
+                try{
+                    slots = Integer.parseInt(input);
+                    if(slots >= 1 && slots <= 10) break;
+                    System.out.println("Number of slots must be from 1 to 10");
 
-    private void viewApplications(){
+                } catch (NumberFormatException e){
+                    System.out.println("Please enter a valid number of slots");
+                }
+            }
+            
+        internshipController.createInternship(currentUser, title, description, level, preferredMajor, openDate, closeDate, slots);
+
+        System.out.println("Internship created successfully!");
+    } catch (IllegalArgumentException e) {
+        System.out.println("Error creating internship: " + e.getMessage());
+    }
+}
+
+private void viewApplications(){
         List<Application> all = appController.getApplications(); 
         boolean any = false;
         for (Application app : all) {
@@ -260,15 +349,20 @@ public class CompanyUI implements FilterOptions{
                               " | Status: " + intern.getInternshipStatus() + " | " + editable);
         }
         
-        System.out.print("Choose internship to edit: ");
-        try {
-            int choice = scanner.nextInt();
-            scanner.nextLine();
-            
-            if (choice < 1 || choice > myInternships.size()) {
-                System.out.println("Invalid selection.");
-                return;
+
+        int choice = -1;
+        while (true) { 
+            System.out.println("Choose internship to edit: ");    
+            String input = scanner.nextLine();
+            try {
+                choice = Integer.parseInt(input.trim());
+                if(choice >=1 && choice <=myInternships.size()) break;
+                System.out.println("Invalid selection. Enter number from the list.");
+
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid number");
             }
+        }
             
             Internship selected = myInternships.get(choice - 1);
             
@@ -301,16 +395,25 @@ public class CompanyUI implements FilterOptions{
             System.out.print("Current Slots: " + selected.getSlots() + "\nNew Slots: ");
             String slotsInput = scanner.nextLine();
             if (!slotsInput.isEmpty()) {
-                int newSlots = Math.min(Integer.parseInt(slotsInput), 10);
-                selected.setSlots(newSlots);
-            }
+                int newSlots;
+                try {
+                    newSlots = Integer.parseInt(slotsInput);
+                    if (newSlots < 1  || newSlots >10){
+                        System.out.println("Slots must be between 1 and 10. Keeping previous value");
+
+                    }
+                    else{
+                        selected.setSlots(newSlots);
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid number. Keeping previous value");
+                }}
             
             System.out.println("Internship updated successfully!");
             
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-    }
+               
+     }
+    
 
     private void deleteInternship() {
         List<Internship> myInternships = getMyInternships();
@@ -327,15 +430,18 @@ public class CompanyUI implements FilterOptions{
                               " | Status: " + intern.getInternshipStatus() + " | ");
         }
         
-        System.out.print("Choose internship to delete: ");
-        try {
-            int choice = scanner.nextInt();
-            scanner.nextLine();
-            
-            if (choice < 1 || choice > myInternships.size()) {
-                System.out.println("Invalid selection.");
-                return;
+        int choice = -1;
+        while (true){
+            System.out.print("Choose internship to delete: ");
+            String input = scanner.nextLine();
+            try {
+                choice = Integer.parseInt(input.trim());
+                if (choice >= 1 && choice <= myInternships.size()) break;
+                System.out.println("Invalid selection. Enter valid number from the list");
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a number");
             }
+        }
             
             Internship selected = myInternships.get(choice - 1);
             
@@ -348,10 +454,8 @@ public class CompanyUI implements FilterOptions{
             } else {
                 System.out.println("Deletion cancelled.");
             }
+        
             
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
     }
 
 
@@ -380,30 +484,46 @@ public class CompanyUI implements FilterOptions{
             return;
         }
 
-        System.out.println("Enter Application ID to approve/reject:");
-        String appID = scanner.nextLine();
-
-        Application selectedApp = null;
-        for (Application app : companyApplications) {
-            if (app.getApplicationID().equals(appID) && app.getInternship().getCompanyName().equalsIgnoreCase(currentUser.getCompanyName())) {
-                selectedApp = app;
-                break;
+        
+        String appID;
+        while(selectedApp == null){
+            System.out.println("Enter Application ID to approve/reject:");
+            appID = scanner.nextLine().trim();
+            if(appID.isEmpty()){
+                System.out.println("Application ID cannot be empty");
+                continue;
+            }
+            for (Application app : companyApplications){
+                if (app.getApplicationID().equals(appID) && app.getInternship().getCompanyName().equalsIgnoreCase(currentUser.getCompanyName())) {
+                    selectedApp = app;
+                    break;
+                }
+            }
+            if(selectedApp == null){
+                System.out.println("Application not found. Please try again");
             }
         }
-        if (selectedApp == null) {
-            System.out.println("Application not found.");
-            return;
+
+        int choice = -1;
+        while(true){
+            System.out.println("1. Approve Application");
+            System.out.println("2. Reject Application");
+            System.out.print("Choose (1-2): ");
+            String input = scanner.nextLine().trim();
+            try {
+                choice = Integer.parseInt(input);
+                if (choice == 1 || choice == 2) break;
+                System.out.println("Invalid choice. Enter 1 or 2");
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter 1 or 2");
+            }
         }
 
-        System.out.println("1. Approve Application");
-        System.out.println("2. Reject Application");
-        System.out.print("Choose (1-2): ");
-        int choice = scanner.nextInt();
-        scanner.nextLine();
-
-        if (choice == 1) appController.approveApplication(currentUser, selectedApp);
-        else if (choice == 2) appController.rejectApplication(currentUser, selectedApp);
-        else System.out.println("Invalid.");
+        switch (choice) {
+            case 1 -> appController.approveApplication(currentUser, selectedApp);
+            case 2 -> appController.rejectApplication(currentUser, selectedApp);
+            default -> System.out.println("Invalid.");
+        }
     }
 
     private void viewMyInternships(){ 
@@ -450,44 +570,59 @@ public class CompanyUI implements FilterOptions{
         }
         System.out.println("=======================");
     }
-
     private void toggleVisibility(){
-        viewMyInternships();
-
-        List<Internship> all = internshipController.getInternships();
-        List<Internship> mine = new ArrayList<>();
-        for (Internship i : all) {
-            if (currentUser.getCompanyName().equalsIgnoreCase(i.getCompanyName())) {
-                mine.add(i);
-            }
-        }
-        if (mine.isEmpty()) {
-            System.out.println("No internships to toggle.");
-            return;
-        }
-        for (int idx = 0; idx < mine.size(); idx++) {
-            System.out.println((idx + 1) + ") " + mine.get(idx).getInternshipTitle()
-                    + " (visible=" + mine.get(idx).getVisibility() + ")");
-        }
-        System.out.print("Choose internship to toggle: ");
         try {
-            int pick = scanner.nextInt();         
-            int idx = pick - 1;
-            if (idx < 0 || idx >= mine.size()) {
-                System.out.println("Invalid index.");
+            viewMyInternships();
+
+            List<Internship> all = internshipController.getInternships();
+            List<Internship> mine = new ArrayList<>();
+            for (Internship i : all) {
+                if (currentUser.getCompanyName().equalsIgnoreCase(i.getCompanyName())) {
+                    mine.add(i);
+                }
+            }
+            if (mine.isEmpty()) {
+                System.out.println("No internships to toggle.");
                 return;
             }
-            internshipController.toggleVisibility(mine.get(idx));          
+            for (int idx = 0; idx < mine.size(); idx++) {
+                System.out.println((idx + 1) + ") " + mine.get(idx).getInternshipTitle()
+                        + " (visible=" + mine.get(idx).getVisibility() + ")");
+            }
+            int pick = -1;
+            while (true) { 
+                System.out.print("Choose internship to toggle: ");
+                String input = scanner.nextLine().trim();
+                try {
+                    pick = Integer.parseInt(input);
+                    if (pick >=1 && pick <=mine.size()) break;
+                    System.out.println("Invalid selection. Please enter a number from the list");
+
+                } catch (NumberFormatException e) { 
+                    System.out.println("Please enter a valid number.");
+                }    
+            }
+            int idx = pick - 1;
+            internshipController.toggleVisibility(mine.get(idx));
         } catch (Exception e) {
             System.out.println("Invalid input.");
         }
     }
     
+    
         
     private void filterInternships() {
-        System.out.println("Enter filter criteria (status/preferredmajors/internshiplevel/closingdate/opendate/companyname/visibility):");
-        System.out.println("Or type 'clear' to remove filters");
-        String criteria = scanner.nextLine();
+        
+        String criteria;
+
+        do{
+            System.out.println("Enter filter criteria (status/preferredmajors/internshiplevel/closingdate/opendate/companyname/visibility):");
+            System.out.println("Or type 'clear' to remove filters");
+            criteria = scanner.nextLine().trim();
+            if(criteria.isEmpty()){
+                System.out.println("Criteria cannot be empty. Please try again.");
+            }
+        } while (criteria.isEmpty());
         
         if ("clear".equalsIgnoreCase(criteria)) {
             currentFilterCriteria = null;
@@ -496,8 +631,18 @@ public class CompanyUI implements FilterOptions{
             return;
         }
         
-        System.out.println("Enter value to filter by:");
-        String value = scanner.nextLine();
+
+        String value;
+        do{
+            System.out.println("Enter value to filter by:");
+            value = scanner.nextLine();
+            if (value.isEmpty()){
+                System.out.println("Value cannot be empty.Please try again");
+
+            }
+
+        }while (value.isEmpty());
+       
         
         //Save filter settings
         currentFilterCriteria = criteria;
@@ -513,27 +658,71 @@ public class CompanyUI implements FilterOptions{
         System.out.print("Enter current password: ");
         String currentPassword = scanner.nextLine();
         
-        System.out.print("Enter new password: ");
-        String newPassword = scanner.nextLine();
-        
-        System.out.print("Confirm new password: ");
-        String confirmPassword = scanner.nextLine();
-        
 
-        if (!newPassword.equals(confirmPassword)) {
-            System.out.println("Error: New passwords do not match.");
-            return;
-        }
-        
-        if (newPassword.isEmpty()) {
-            System.out.println("Error: New password cannot be empty.");
-            return;
-        }
+        String newPassword;
+        do{
+            System.out.println("Enter new password");
+            newPassword = scanner.nextLine();
+            if (newPassword.isEmpty()){
+                System.out.println("Error: new password cannot be empty");
+
+            }
+        } while (newPassword.isEmpty());
+
+        String confirmPassword;
+        do{
+            System.out.print("Confirm new password: ");
+            confirmPassword = scanner.nextLine();
+            if(!newPassword.equals(confirmPassword)){
+                System.out.println("Error: New passwords do not match.");
+            }
+        } while (!newPassword.equals(confirmPassword));
         
        
         String currentUserID = currentUser.getUserID();
         logInController.changePassword(currentUserID, currentPassword, newPassword);
-        System.out.println("Returning to main menu...");
-    }
-}
+            System.out.println("Returning to main menu...");
+         }
 
+    private void showBestApplicantsByScore() {
+        //lists the company rep's internship offerings and prompts them to select one
+        List<Internship> internships = internshipController.getInternshipsForCompany(currentUser.getCompanyName());
+        if (internships.isEmpty()) {
+            System.out.println("You have no internships.");
+            return;
+        }
+
+        System.out.println("Select an internship:");
+        for (int i = 0; i < internships.size(); i++) {
+            Internship in = internships.get(i);
+            System.out.println((i + 1) + ". " + in.getInternshipTitle() + " [" + in.getLevel() + "]");
+        }
+
+        int selection = -1;
+        while (selection < 1 || selection > internships.size()) {
+            System.out.print("Enter internship number: ");
+            try {
+                selection = Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input.");
+            }
+        }
+        Internship selectedInternship = internships.get(selection - 1);
+
+        // 2. Get, sort, display applicants
+        List<Application> candidateApps = appController.getApplicationsForInternship(selectedInternship);
+        candidateApps.sort((a, b) -> {
+            int scoreA = MatchingScoreUtil.score(a.getStudent(), selectedInternship);
+            int scoreB = MatchingScoreUtil.score(b.getStudent(), selectedInternship);
+            return Integer.compare(scoreB, scoreA);
+        });
+
+        System.out.println("\nApplicants for " + selectedInternship.getInternshipTitle() + ":");
+        for (Application app : candidateApps) {
+            int score = MatchingScoreUtil.score(app.getStudent(), selectedInternship);
+            System.out.println(app.getStudent().getName() + ", Major: " + app.getStudent().getMajor() +
+                ", Year: " + app.getStudent().getYearOfStudy() + " [Score: " + score + "]");
+        }
+    }
+
+    }

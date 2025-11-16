@@ -10,7 +10,7 @@ public class Application{
     public Application(Student student ,Internship internship){
         this.student = student;
         this.internship = internship;
-        this.status = "PENDING";
+        this.status = Status.PENDING.name();
         this.applicationID = generateApplicationID();
         this.withdrawalRequested = false;
     }
@@ -39,11 +39,11 @@ public class Application{
     }
     
     public boolean isPending() {
-        return "PENDING".equals(status);
+        return Status.PENDING.matches(status);
     }
 
     public boolean isSuccessful() {
-        return "SUCCESSFUL".equals(status);
+        return Status.SUCCESSFUL.matches(status);
     }
     
     public boolean isWithdrawalRequested() {

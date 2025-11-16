@@ -163,6 +163,34 @@ public class ApplicationController{
         app.setStatus(status);
     }
 
+    public boolean hasApplied(Student student, Internship internship){
+        if (student == null || internship == null) return false;
+        List<Application> apps = getApplications();
+        if (apps == null) return false;
+        for (Application a : apps){
+            try {
+                if(a == null) continue;
+                if (a.getStudent() == null || a.getInternship() == null) continue;
+                if (a.getStudent().getUserID().equals(student.getUserID()) && a.getInternship().equals(internship)){
+                    return true;
+                }
+            } catch (Exception ignore){
+                //skip corrupt entry 
+            }
+            }
+            return false;
+            }
+    //returns all applications for a given Internship; for separate smart scoring in company UI
+    public List<Application> getApplicationsForInternship(Internship internship) {
+        List<Application> list = new ArrayList<>();
+        for (Application a : getApplications()) {
+            if (a != null && a.getInternship().equals(internship)) {
+                list.add(a);
+            }
+        }
+        return list;
+    }
+
 
 }
 

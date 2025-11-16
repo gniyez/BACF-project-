@@ -45,7 +45,7 @@ public class CareerServiceController implements FilterOptions{
 
         for (User user : users) {
             if (user instanceof CompanyRepresentative && user.getUserID().equals(repID)) {
-                ((CompanyRepresentative) user).setStatus("APPROVED");
+                ((CompanyRepresentative) user).setStatus(Status.APPROVED.name());
                 return true;
             }
         }
@@ -75,7 +75,9 @@ public class CareerServiceController implements FilterOptions{
         
         appController.processApprovedWithdrawal(app);
         System.out.println("Withdrawal approved for application: " + app.getApplicationID());
+        WithdrawalPolicy.recordWithdrawal(app.getStudent().getUserID(), app.getInternship()); 
         return true;
+
     }
 
     public boolean rejectWithdrawal(String staffID, Application app) {
@@ -103,7 +105,7 @@ public class CareerServiceController implements FilterOptions{
     public boolean approveInternship(String staffID, Internship internship) {
         if (!isStaff(staffID)) return false;
 
-        internship.setInternshipStatus("APPROVED");
+        internship.setInternshipStatus(Status.APPROVED.name());
         internship.setVisibility(true);
         System.out.println("Internship approved: " + internship.getInternshipTitle());
         return true;

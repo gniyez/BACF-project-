@@ -29,8 +29,7 @@ public class LogInController implements LogIn {
         //User exists, now check password
         if (foundUser.getPassword().equals(password)){
             //Check if companyrep account is already approved
-            if (foundUser instanceof CompanyRepresentative) {
-                CompanyRepresentative rep = (CompanyRepresentative) foundUser;
+            if (foundUser instanceof CompanyRepresentative rep) {
                 if (!rep.isApproved()) {
                     System.out.println("Login failed. Your company representative account is pending approval from Career Center Staff.");
                     return false;
@@ -46,6 +45,7 @@ public class LogInController implements LogIn {
         }
     }
 
+    @Override
     public void logout(){
         if(currentUser!=null){
             System.out.println("User "+currentUser.getName()+" logged out.");

@@ -14,6 +14,8 @@ public class CareerServiceStaff extends User{
     public void setDepartment(String department){
         this.department = department;
     }
+
+    @Override
     public void displayRole() {
         System.out.println("I am a career service staff");
     }

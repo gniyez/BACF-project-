@@ -4,7 +4,7 @@ public class CompanyRepresentative extends User{
     private String companyName;
     private String department;
     private String position;
-    private String status = "PENDING";
+    private String status = Status.PENDING.name();
 
     public CompanyRepresentative(String email, String name, String companyName, 
             String department, String position) {
@@ -12,7 +12,7 @@ public class CompanyRepresentative extends User{
 	this.companyName = companyName;
 	this.department = department;
 	this.position = position;
-    this.status = "PENDING";
+    this.status = Status.PENDING.name();
     }
     
     public String getCompanyName() {
@@ -42,12 +42,13 @@ public class CompanyRepresentative extends User{
         this.status = status;
     }
     public boolean isApproved(){
-        return status.equals("APPROVED");
+        return Status.APPROVED.matches(status);
     }
     public void setApproved(){
-        this.status = "APPROVED";
+        this.status = Status.APPROVED.name();
     }
    
+    @Override
     public void displayRole(){
         System.out.println("I am a company representative");
     }
