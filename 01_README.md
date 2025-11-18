@@ -24,27 +24,43 @@ We are a group of 5 from Lab Group SACD, Nanyang Technological University, Singa
 ## Features
 
 - [x] Student
-  - [x] View profile
-  - [x] Edit profile 
-  - [x] Change password
-  - [x] View internship postings 
-  - [x] Apply for internships
+  - [x] View most eligible internship 
+  - [x] Apply internships
+  - [x] Check application status
+  - [x] Filter internships 
+  - [x] Accept Placement
   - [x] Withdraw applications 
   - [x] Check application status
+  - [x] Change Password
+  - [x] Browse all available internships
+  - [x] Browse Recommended Internships by your Suitability Score
+  - [x] Logout
 - [x] Company Representative
-  - [x] View profile 
-  - [x] Edit profile
-  - [x] Create internship posting 
-  - [x] Manage internship postings 
-  - [x] View applications
+  - [x] Create new internship 
+  - [x] View application
+  - [x] Edit internship posting 
+  - [x] Delete internship
   - [x] Approve / Reject applications 
+  - [x] View my internships
+  - [x]  Toggle Internship Visibility
+  - [x]  Filter Internships
+  - [x]  Change Password
+  - [x]  View Applications by Suitability Score
+  - [x]  Logout
+     
 - [x] CareerService Staff
-  - [x] View profile 
-  - [x] Edit profile 
-  - [x] View internship postings 
-  - [x] Approve / Reject internship postings 
-  - [x] View internship applications 
-  - [x] Approve / Reject internship applications 
+  - [x] Approve Company Representative
+  - [x] Reject Company Representative
+  - [x] Approve Internship 
+  - [x] Reject Internship 
+  - [x] Generate Internship Report 
+  - [x]List of pending companies
+  - [x] List of pending internships
+  - [x] Filter Internships
+  - [x] Manage Withdrawal Requests
+  - [x]  View internship opportunities
+  - [x]  Change Password
+  - [x]  Logout
 
 ## UML Class Diagram
 
