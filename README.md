@@ -1,6 +1,6 @@
 # NTU AY2025/26 Semester 1 SC2002-Group-Project - Internship Placement Management System (IPMS)
 
-IPMS is a Java console application designed for seamless management of university internships. Built with rigorous object-oriented design, the system focuses on reusability, extensibility, and maintainability—making it easy to upgrade, expand, and support various user roles such as students, company representatives, and career service staff
+IPMS is a Java console application designed for seamless management of university internships. Built with rigorous object-oriented design, the system focuses on reusability, extensibility, and maintainability — making it easy to upgrade, expand, and support various user roles such as students, company representatives, and career service staff
 
 The initial default password for every user is `password`.
 
