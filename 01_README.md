@@ -54,7 +54,7 @@ We are a group of 5 from Lab Group SACD, Nanyang Technological University, Singa
   - [x] Approve Internship 
   - [x] Reject Internship 
   - [x] Generate Internship Report 
-  - [x]List of pending companies
+  - [x] List of pending companies
   - [x] List of pending internships
   - [x] Filter Internships
   - [x] Manage Withdrawal Requests
