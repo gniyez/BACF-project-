@@ -2,10 +2,23 @@ package project;
 
 import java.time.LocalDate;
 
+/**
+ * Utility class for computing a matching score between a student and an internship.
+ * The score is an integer from 0 to 100 based on eligibility and preference fit.
+ */
 public final class MatchingScoreUtil {
     private MatchingScoreUtil() {}
-
-    // Returns 0–100 score combining eligibility and preference fit
+    /**
+     * Computes a matching score between a student and an internship.
+     * The method first checks basic eligibility (level, date range, status, visibility).
+     * If the internship is not eligible for the student, the score is 0.
+     * Otherwise, the score is built using:
+     * major fit, internship level fit, time left until closing date and slot availability.
+     *
+     * @param student    the student to evaluate
+     * @param internship the internship to evaluate
+     * @return an integer score between 0 and 100, where higher means a better match
+     */    
     public static int score(Student student, Internship internship) {
         int score = 0;
 
